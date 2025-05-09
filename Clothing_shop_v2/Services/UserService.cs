@@ -15,10 +15,10 @@ namespace Clothing_shop_v2.Services
 {
     public class UserService : IUserService
     {
-        private readonly ClothingShopDbContext _context;
+        private readonly ClothingShopV3Context _context;
         private readonly IConfiguration _config;
         private readonly IEmailService _emailService;
-        public UserService(ClothingShopDbContext context, IConfiguration config, IEmailService emailService)
+        public UserService(ClothingShopV3Context context, IConfiguration config, IEmailService emailService)
         {
             _context = context;
             _config = config;
@@ -134,7 +134,7 @@ namespace Clothing_shop_v2.Services
                 if (user == null)
                     return new RegisterReponse { Success = false, Message = "Người dùng không tồn tại" };
 
-                if (user.IsActive)
+                if (user.IsActive == true)
                     return new RegisterReponse { Success = false, Message = "Tài khoản đã được kích hoạt" };
 
                 user.IsActive = true;
@@ -162,7 +162,7 @@ namespace Clothing_shop_v2.Services
             if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
                 return new LoginResponse { Success = false, Message = "Email hoặc mật khẩu không đúng" };
 
-            if (!user.IsActive)
+            if (!user.IsActive == true)
                 return new LoginResponse { Success = false, Message = "Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email hoặc yêu cầu gửi lại link kích hoạt." };
 
             var token = GenerateJwtToken(user);

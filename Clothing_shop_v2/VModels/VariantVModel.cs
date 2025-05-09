@@ -26,7 +26,7 @@ namespace Clothing_shop_v2.VModels
 
     public class VariantGetVModel : VariantUpdateVModel
     {
-        public DateTime CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
     }
 

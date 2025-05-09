@@ -11,7 +11,7 @@ namespace Clothing_shop_v2.Mappings
             {
                 Id = promotion.Id,
                 PromotionName = promotion.PromotionName,
-                PercentDiscount = promotion.PercentDiscount,
+                DiscountType = promotion.DiscountType,
                 DiscountValue = promotion.DiscountValue,
                 StartDate = promotion.StartDate,
                 EndDate = promotion.EndDate,
@@ -25,7 +25,7 @@ namespace Clothing_shop_v2.Mappings
             return new Promotion
             {
                 PromotionName = vModel.PromotionName,
-                PercentDiscount = vModel.PercentDiscount,
+                DiscountType = vModel.DiscountType,
                 DiscountValue = vModel.DiscountValue,
                 StartDate = vModel.StartDate,
                 EndDate = vModel.EndDate,
@@ -39,7 +39,7 @@ namespace Clothing_shop_v2.Mappings
                 throw new ArgumentNullException(nameof(promotion));
             }
             promotion.PromotionName = vModel.PromotionName;
-            promotion.PercentDiscount = vModel.PercentDiscount;
+            promotion.DiscountType = vModel.DiscountType;
             promotion.DiscountValue = vModel.DiscountValue;
             promotion.StartDate = vModel.StartDate;
             promotion.EndDate = vModel.EndDate;

@@ -19,7 +19,7 @@ namespace Clothing_shop_v2.VModels
     public class ProductGetVModel : ProductUpdateVModel
     {
         public CategoryGetVModel Category { get; set; } = null!;
-        public DateTime CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public string PrimaryImageUrl { get; set; } // URL của ảnh chính
         public decimal Price { get; set; } // Giá sản phẩm

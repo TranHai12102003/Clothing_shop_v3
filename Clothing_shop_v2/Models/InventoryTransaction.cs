@@ -5,7 +5,7 @@ namespace Clothing_shop_v2.Models;
 
 public partial class InventoryTransaction
 {
-    public int TransactionId { get; set; }
+    public int Id { get; set; }
 
     public int VariantId { get; set; }
 
@@ -17,9 +17,19 @@ public partial class InventoryTransaction
 
     public DateTime TransactionDate { get; set; }
 
-    public string Reason { get; set; } = null!;
+    public string? Reason { get; set; }
 
     public int? OrderId { get; set; }
+
+    public string? CreatedBy { get; set; }
+
+    public string? UpdatedBy { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
+
+    public DateTime? UpdatedDate { get; set; }
+
+    public bool? IsActive { get; set; }
 
     public virtual Order? Order { get; set; }
 

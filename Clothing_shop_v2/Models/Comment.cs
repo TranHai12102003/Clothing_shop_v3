@@ -13,9 +13,15 @@ public partial class Comment
 
     public string CommentText { get; set; } = null!;
 
-    public DateTime CommentDate { get; set; }
+    public string? CreatedBy { get; set; }
+
+    public string? UpdatedBy { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
 
     public DateTime? UpdatedDate { get; set; }
+
+    public bool? IsActive { get; set; }
 
     public virtual Product Product { get; set; } = null!;
 

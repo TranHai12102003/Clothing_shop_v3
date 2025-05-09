@@ -11,7 +11,7 @@ public partial class Payment
 
     public string PaymentGateway { get; set; } = null!;
 
-    public string TransactionId { get; set; } = null!;
+    public string? TransactionId { get; set; }
 
     public decimal Amount { get; set; }
 
@@ -19,9 +19,19 @@ public partial class Payment
 
     public DateTime PaymentDate { get; set; }
 
-    public string PaymentMethod { get; set; } = null!;
+    public string? PaymentMethod { get; set; }
+
+    public string? CreatedBy { get; set; }
+
+    public string? UpdatedBy { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
 
     public DateTime? UpdatedDate { get; set; }
 
+    public bool? IsActive { get; set; }
+
     public virtual Order Order { get; set; } = null!;
+
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }

@@ -9,11 +9,17 @@ public partial class Color
 
     public string ColorName { get; set; } = null!;
 
-    public string ColorCode { get; set; } = null!;
+    public string? ColorCode { get; set; }
 
-    public DateTime CreatedDate { get; set; }
+    public string? CreatedBy { get; set; }
+
+    public string? UpdatedBy { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
 
     public DateTime? UpdatedDate { get; set; }
+
+    public bool? IsActive { get; set; }
 
     public virtual ICollection<Variant> Variants { get; set; } = new List<Variant>();
 }

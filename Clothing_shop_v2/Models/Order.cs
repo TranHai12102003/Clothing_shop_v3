@@ -15,13 +15,21 @@ public partial class Order
 
     public string Status { get; set; } = null!;
 
-    public string ShippingAddress { get; set; } = null!;
+    public string? ShippingAddress { get; set; }
 
     public int? PaymentId { get; set; }
 
     public int? VoucherId { get; set; }
 
+    public string? CreatedBy { get; set; }
+
+    public string? UpdatedBy { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
+
     public DateTime? UpdatedDate { get; set; }
+
+    public bool? IsActive { get; set; }
 
     public virtual ICollection<InventoryTransaction> InventoryTransactions { get; set; } = new List<InventoryTransaction>();
 
@@ -30,6 +38,8 @@ public partial class Order
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
     public virtual Payment? Payment { get; set; }
+
+    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
     public virtual User User { get; set; } = null!;
 

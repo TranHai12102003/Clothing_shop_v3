@@ -12,8 +12,8 @@ namespace Clothing_shop_v2.Services
 {
     public class CategoryService : ICategoryService
     {
-        private readonly ClothingShopDbContext _context;
-        public CategoryService(ClothingShopDbContext context)
+        private readonly ClothingShopV3Context _context;
+        public CategoryService(ClothingShopV3Context context)
         {
             _context = context;
         }

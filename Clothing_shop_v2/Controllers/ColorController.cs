@@ -12,9 +12,9 @@ namespace Clothing_shop_v2.Controllers
     public class ColorController : Controller
     {
         private readonly ILogger<ColorController> _logger;
-        private readonly ClothingShopDbContext _context;
+        private readonly ClothingShopV3Context _context;
         private readonly IColorService _colorService;
-        public ColorController(ILogger<ColorController> logger, ClothingShopDbContext context, IColorService colorService)
+        public ColorController(ILogger<ColorController> logger, ClothingShopV3Context context, IColorService colorService)
         {
             _logger = logger;
             _context = context;

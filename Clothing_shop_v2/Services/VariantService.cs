@@ -13,8 +13,8 @@ namespace Clothing_shop_v2.Services
 {
     public class VariantService : IVariantService
     {
-        private readonly ClothingShopDbContext _context;
-        public VariantService(ClothingShopDbContext context)
+        private readonly ClothingShopV3Context _context;
+        public VariantService(ClothingShopV3Context context)
         {
             _context = context;
         }

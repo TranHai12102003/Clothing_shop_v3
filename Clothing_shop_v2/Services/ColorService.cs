@@ -13,8 +13,8 @@ namespace Clothing_shop_v2.Services
 {
     public class ColorService : IColorService
     {
-        private readonly ClothingShopDbContext _context;
-        public ColorService(ClothingShopDbContext context)
+        private readonly ClothingShopV3Context _context;
+        public ColorService(ClothingShopV3Context context)
         {
             _context = context;
         }

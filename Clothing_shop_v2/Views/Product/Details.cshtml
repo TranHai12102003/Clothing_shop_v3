@@ -31,7 +31,7 @@
             <div class="col-md-8">
                 <p><strong>Tên sản phẩm:</strong> @Model.ProductName</p>
                 <p><strong>Danh mục:</strong> @(Model.Category?.CategoryName ?? "-")</p>
-                <p><strong>Ngày tạo:</strong> @Model.CreatedDate.ToString("dd-MM-yyyy HH:mm")</p>
+                <p><strong>Ngày tạo:</strong> @Model.CreatedDate?.ToString("dd-MM-yyyy HH:mm")</p>
                 <p><strong>Ngày cập nhật:</strong> @(Model.UpdatedDate.HasValue ? Model.UpdatedDate.Value.ToString("dd-MM-yyyy HH:mm") : "-")</p>
                 <p><strong>Mô tả:</strong></p>
                 <div class="description-content">@Html.Raw(Model.Description)</div>

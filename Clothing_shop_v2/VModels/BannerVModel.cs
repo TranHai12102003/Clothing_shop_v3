@@ -32,7 +32,7 @@ namespace Clothing_shop_v2.VModels
         [Required(ErrorMessage = "Ngày kết thúc là bắt buộc")]
         public DateTime EndDate { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
 
         [Required(ErrorMessage = "Thứ tự hiển thị là bắt buộc")]
         [Range(0, int.MaxValue, ErrorMessage = "Thứ tự hiển thị phải là số không âm")]
@@ -47,7 +47,7 @@ namespace Clothing_shop_v2.VModels
     }
     public class BannerGetVModel : BannerUpdateVModel
     {
-        public DateTime CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public IdNameVModel? Category { get; set; }
         public IdNameVModel? Product { get; set; }

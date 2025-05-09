@@ -9,11 +9,11 @@ namespace Clothing_shop_v2.VModels
 
         public int? ParentCategoryId { get; set; }
 
-        public DateTime CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
 
         public DateTime? UpdatedDate { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
 
         public string? ImageUrl { get; set; }
         public IFormFile? ImageFile { get; set; }

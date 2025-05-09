@@ -9,7 +9,7 @@ public partial class Voucher
 
     public string VoucherCode { get; set; } = null!;
 
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; }
 
     public string DiscountType { get; set; } = null!;
 
@@ -25,13 +25,17 @@ public partial class Voucher
 
     public int UsedCount { get; set; }
 
-    public bool IsActive { get; set; }
-
     public int? CustomerTypeId { get; set; }
 
-    public DateTime CreatedDate { get; set; }
+    public string? CreatedBy { get; set; }
+
+    public string? UpdatedBy { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
 
     public DateTime? UpdatedDate { get; set; }
+
+    public bool? IsActive { get; set; }
 
     public virtual CustomerType? CustomerType { get; set; }
 

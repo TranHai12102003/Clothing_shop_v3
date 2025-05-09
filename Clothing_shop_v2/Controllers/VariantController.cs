@@ -11,9 +11,9 @@ namespace Clothing_shop_v2.Controllers
     public class VariantController : Controller
     {
         private readonly ILogger<VariantController> _logger;
-        private readonly ClothingShopDbContext _context;
+        private readonly ClothingShopV3Context _context;
         private readonly IVariantService _variantService;
-        public VariantController(ILogger<VariantController> logger, ClothingShopDbContext context, IVariantService variantService)
+        public VariantController(ILogger<VariantController> logger, ClothingShopV3Context context, IVariantService variantService)
         {
             _logger = logger;
             _context = context;

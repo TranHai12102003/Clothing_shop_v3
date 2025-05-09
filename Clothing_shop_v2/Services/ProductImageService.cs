@@ -8,11 +8,11 @@ namespace Clothing_shop_v2.Services
 {
     public class ProductImageService : IProductImageService
     {
-        private readonly ClothingShopDbContext _context;
+        private readonly ClothingShopV3Context _context;
         private readonly Cloudinary _cloudinary;
         private readonly ILogger<ProductImageService> _logger;
 
-        public ProductImageService(ClothingShopDbContext context, Cloudinary cloudinary, ILogger<ProductImageService> logger)
+        public ProductImageService(ClothingShopV3Context context, Cloudinary cloudinary, ILogger<ProductImageService> logger)
         {
             _context = context;
             _cloudinary = cloudinary;

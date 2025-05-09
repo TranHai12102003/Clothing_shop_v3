@@ -16,11 +16,11 @@ namespace Clothing_shop_v2.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ClothingShopDbContext _context;
+        private readonly ClothingShopV3Context _context;
         private readonly IEmailService _emailService;
         private readonly IUserService _userService;
 
-        public HomeController(ILogger<HomeController> logger, ClothingShopDbContext context, IEmailService emailService,IUserService userService)
+        public HomeController(ILogger<HomeController> logger, ClothingShopV3Context context, IEmailService emailService,IUserService userService)
         {
             _logger = logger;
             _context = context;

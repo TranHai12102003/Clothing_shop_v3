@@ -23,7 +23,7 @@ namespace Clothing_shop_v2.VModels
 
         public int UsedCount { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
 
         public int? CustomerTypeId { get; set; }
     }
@@ -34,7 +34,7 @@ namespace Clothing_shop_v2.VModels
     public class VoucherGetVModel : VoucherUpdateVModel
     {
         public IdNameVModel CustomerType { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
     }
     public class VoucherFilterParams

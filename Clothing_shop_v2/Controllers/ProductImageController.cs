@@ -12,9 +12,9 @@ namespace Clothing_shop_v2.Controllers
     public class ProductImageController : Controller
     {
         private readonly ILogger<ProductImageController> _logger;
-        private readonly ClothingShopDbContext _context;
+        private readonly ClothingShopV3Context _context;
         private readonly Cloudinary _cloudinary;
-        public ProductImageController(ILogger<ProductImageController> logger, ClothingShopDbContext context, Cloudinary cloudinary)
+        public ProductImageController(ILogger<ProductImageController> logger, ClothingShopV3Context context, Cloudinary cloudinary)
         {
             _logger = logger;
             _context = context;

@@ -19,7 +19,15 @@ public partial class Notification
 
     public bool IsRead { get; set; }
 
-    public DateTime CreatedDate { get; set; }
+    public string? CreatedBy { get; set; }
+
+    public string? UpdatedBy { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
+
+    public DateTime? UpdatedDate { get; set; }
+
+    public bool? IsActive { get; set; }
 
     public DateTime? ReadDate { get; set; }
 

@@ -13,9 +13,9 @@ namespace Clothing_shop_v2.Services
 {
     public class ProductService : IProductService
     {
-        private readonly ClothingShopDbContext _context;
+        private readonly ClothingShopV3Context _context;
         private readonly IProductImageService _productImageService;
-        public ProductService(ClothingShopDbContext context, IProductImageService productImageService)
+        public ProductService(ClothingShopV3Context context, IProductImageService productImageService)
         {
             _context = context;
             _productImageService = productImageService;
