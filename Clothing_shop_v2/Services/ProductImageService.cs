@@ -24,91 +24,80 @@ namespace Clothing_shop_v2.Services
             // Kiểm tra productId
             var product = await _context.Products.FindAsync(productId);
             if (product == null)
-            {
                 return "Sản phẩm không tồn tại.";
-            }
 
             // Kiểm tra variantId nếu có
             if (variantId.HasValue)
             {
                 var variant = await _context.Variants.FindAsync(variantId);
                 if (variant == null || variant.ProductId != productId)
-                {
                     return "Biến thể không tồn tại hoặc không thuộc sản phẩm này.";
-                }
             }
 
             // Kiểm tra hình ảnh
             if (imageFiles == null || !imageFiles.Any())
-            {
                 return "Vui lòng tải lên ít nhất một hình ảnh.";
-            }
 
-            // Validate kiểu file
+            // Validate file
             string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
             foreach (var file in imageFiles)
             {
-                var fileExtension = Path.GetExtension(file.FileName).ToLower();
-                if (!allowedExtensions.Contains(fileExtension))
-                {
-                    return "Định dạng file không được hỗ trợ. Chỉ chấp nhận .jpg, .jpeg, .png, .gif.";
-                }
-
-                if (file.Length > 5 * 1024 * 1024) // Giới hạn 5MB
-                {
+                var ext = Path.GetExtension(file.FileName).ToLower();
+                if (!allowedExtensions.Contains(ext))
+                    return "Định dạng file không được hỗ trợ.";
+                if (file.Length > 5 * 1024 * 1024)
                     return "Kích thước file không được vượt quá 5MB.";
-                }
             }
 
             try
             {
-                // Kiểm tra xem sản phẩm/biến thể đã có hình ảnh chính chưa
                 bool hasPrimaryImage = await _context.ProductImages.AnyAsync(pi =>
                     pi.ProductId == productId &&
                     pi.VariantId == variantId &&
                     pi.IsPrimary);
                 bool firstImage = !hasPrimaryImage;
 
-                // Tải hình ảnh lên Cloudinary và lưu URL
-                foreach (var imageFile in imageFiles)
+                var productImages = new List<ProductImage>();
+
+                // Upload ảnh song song
+                var uploadTasks = imageFiles.Select(async (imageFile, index) =>
                 {
-                    if (imageFile != null && imageFile.Length > 0)
+                    var uploadParams = new ImageUploadParams
                     {
-                        var uploadParams = new ImageUploadParams
-                        {
-                            File = new FileDescription(imageFile.FileName, imageFile.OpenReadStream()),
-                            Transformation = new Transformation().Width(500).Height(500).Crop("fill"),
-                            Folder = "upload_clothingshop/products",
-                            UseFilename = true,
-                            UniqueFilename = false
-                        };
+                        File = new FileDescription(imageFile.FileName, imageFile.OpenReadStream()),
+                        Transformation = new Transformation().Width(500).Height(500).Crop("fill"),
+                        Folder = "upload_clothingshop/products",
+                        UseFilename = true,
+                        UniqueFilename = false
+                    };
 
-                        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                    var uploadResult = await _cloudinary.UploadAsync(uploadParams);
 
-                        if (uploadResult.Error != null)
-                        {
-                            _logger.LogError("Cloudinary upload error: {ErrorMessage}", uploadResult.Error.Message);
-                            return $"Cloudinary upload failed: {uploadResult.Error.Message}";
-                        }
-
-                        var imageUrl = uploadResult.SecureUrl.AbsoluteUri;
-
-                        var productImage = new ProductImage
-                        {
-                            ProductId = productId,
-                            VariantId = variantId,
-                            ImageUrl = imageUrl,
-                            IsPrimary = firstImage,
-                            CreatedDate = DateTime.Now,
-                            UpdatedDate = DateTime.Now
-                        };
-
-                        _context.ProductImages.Add(productImage);
-                        firstImage = false;
+                    if (uploadResult.Error != null)
+                    {
+                        _logger.LogError("Cloudinary upload error: {ErrorMessage}", uploadResult.Error.Message);
+                        throw new Exception($"Cloudinary upload failed: {uploadResult.Error.Message}");
                     }
-                }
 
+                    return new ProductImage
+                    {
+                        ProductId = productId,
+                        VariantId = variantId,
+                        ImageUrl = uploadResult.SecureUrl.AbsoluteUri,
+                        IsPrimary = firstImage && index == 0, // Ảnh đầu tiên mới set primary
+                        CreatedDate = DateTime.Now,
+                        UpdatedDate = DateTime.Now
+                    };
+                });
+
+                // Chờ tất cả ảnh được tải xong
+                var uploadedImages = await Task.WhenAll(uploadTasks);
+                productImages.AddRange(uploadedImages);
+
+                // Lưu vào database 1 lần
+                await _context.ProductImages.AddRangeAsync(productImages);
                 await _context.SaveChangesAsync();
+
                 return "Thêm hình ảnh thành công.";
             }
             catch (Exception ex)
@@ -117,6 +106,7 @@ namespace Clothing_shop_v2.Services
                 return "Đã có lỗi xảy ra: " + ex.Message;
             }
         }
+
 
         public async Task<string> DeleteImage(int imageId)
         {
