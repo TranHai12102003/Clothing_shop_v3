@@ -9,15 +9,19 @@ public partial class Category
 
     public string CategoryName { get; set; } = null!;
 
+    public string? ImageUrl { get; set; }
+
     public int? ParentCategoryId { get; set; }
 
-    public DateTime CreatedDate { get; set; }
+    public string? CreatedBy { get; set; }
+
+    public string? UpdatedBy { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
 
     public DateTime? UpdatedDate { get; set; }
 
-    public bool IsActive { get; set; }
-
-    public string? ImageUrl { get; set; }
+    public bool? IsActive { get; set; }
 
     public virtual ICollection<Banner> Banners { get; set; } = new List<Banner>();
 

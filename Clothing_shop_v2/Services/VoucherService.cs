@@ -13,8 +13,8 @@ namespace Clothing_shop_v2.Services
 {
     public class VoucherService : IVoucherService
     {
-        private readonly ClothingShopDbContext _context;
-        public VoucherService(ClothingShopDbContext context)
+        private readonly ClothingShopV3Context _context;
+        public VoucherService(ClothingShopV3Context context)
         {
             _context = context;
         }

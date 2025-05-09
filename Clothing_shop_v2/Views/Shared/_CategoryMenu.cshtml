@@ -6,10 +6,10 @@
 <nav class="collapse show navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0" id="navbar-vertical">
     <div class="navbar-nav w-100 overflow-hidden" style="height: 410px">
         @{
-            var parentCategories = Model.Where(c => c.ParentCategoryId == null && c.IsActive).ToList();
+            var parentCategories = Model.Where(c => c.ParentCategoryId == null && c.IsActive == true).ToList();
             foreach (var parent in parentCategories)
             {
-                var childCategories = Model.Where(c => c.ParentCategoryId == parent.Id && c.IsActive).ToList();
+                var childCategories = Model.Where(c => c.ParentCategoryId == parent.Id && c.IsActive == true).ToList();
                 if (childCategories.Any())
                 {
                     <div class="nav-item dropdown">

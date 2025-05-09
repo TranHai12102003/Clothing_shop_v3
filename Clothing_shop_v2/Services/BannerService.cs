@@ -13,8 +13,8 @@ namespace Clothing_shop_v2.Services
 {
     public class BannerService : IBannerService
     {
-        private readonly ClothingShopDbContext _context;
-        public BannerService(ClothingShopDbContext context)
+        private readonly ClothingShopV3Context _context;
+        public BannerService(ClothingShopV3Context context)
         {
             _context = context;
         }

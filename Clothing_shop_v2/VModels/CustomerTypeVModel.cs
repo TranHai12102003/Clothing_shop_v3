@@ -15,7 +15,7 @@ namespace Clothing_shop_v2.VModels
     }
     public class CustomerTypeGetVModel : CustomerTypeUpdateVModel
     {
-        public DateTime CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
     }
     public class CustomerTypeFilterParams

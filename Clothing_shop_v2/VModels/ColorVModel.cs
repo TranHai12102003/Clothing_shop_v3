@@ -15,7 +15,7 @@ namespace Clothing_shop_v2.VModels
     }
     public class ColorGetVModel : ColorUpdateVModel
     {
-        public DateTime CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
     }
     public class ColorListViewModel

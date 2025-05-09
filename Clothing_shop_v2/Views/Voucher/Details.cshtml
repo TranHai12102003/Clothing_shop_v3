@@ -40,8 +40,8 @@
                                 <div class="mb-2">
                                     <label class="text-muted">Trạng thái</label>
                                     <p class="fw-bold">
-                                        <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
-                                            @(Model.IsActive ? "Hoạt động" : "Hết hạn")
+                                        <span class="badge @(Model.IsActive == true ? "bg-success" : "bg-secondary")">
+                                            @(Model.IsActive ==true ? "Hoạt động" : "Hết hạn")
                                         </span>
                                     </p>
                                 </div>
@@ -88,7 +88,7 @@
                                         <td>@customerType.Description</td>
                                         <td>@(customerType.MinOrderCount.HasValue ? customerType.MinOrderCount.Value.ToString() : "Không có")</td>
                                         <td>@(customerType.MinTotalAmount.HasValue ? $"{customerType.MinTotalAmount.Value:N2} VND" : "Không có")</td>
-                                        <td>@customerType.CreatedDate.ToString("dd/MM/yyyy - hh:mm tt")</td>
+                                        <td>@customerType.CreatedDate?.ToString("dd/MM/yyyy - hh:mm tt")</td>
                                         <td>
                                             <a asp-action="EditCustomerType" asp-route-id="@customerType.Id" class="btn btn-sm btn-outline-primary">Sửa</a>
                                             <a asp-action="RemoveCustomerType" asp-route-voucherId="@Model.Id" asp-route-customerTypeId="@customerType.Id" class="btn btn-sm btn-outline-danger ms-1">Xóa</a>

@@ -11,9 +11,9 @@ public partial class Banner
 
     public string ImageUrl { get; set; } = null!;
 
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; }
 
-    public string LinkUrl { get; set; } = null!;
+    public string? LinkUrl { get; set; }
 
     public int? ProductId { get; set; }
 
@@ -25,13 +25,17 @@ public partial class Banner
 
     public DateTime EndDate { get; set; }
 
-    public bool IsActive { get; set; }
-
     public int DisplayOrder { get; set; }
 
-    public DateTime CreatedDate { get; set; }
+    public string? CreatedBy { get; set; }
+
+    public string? UpdatedBy { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
 
     public DateTime? UpdatedDate { get; set; }
+
+    public bool? IsActive { get; set; }
 
     public virtual Category? Category { get; set; }
 

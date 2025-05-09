@@ -12,8 +12,8 @@ namespace Clothing_shop_v2.Services
 {
     public class PromotionService : IPromotionService
     {
-        private readonly ClothingShopDbContext _context;
-        public PromotionService(ClothingShopDbContext context)
+        private readonly ClothingShopV3Context _context;
+        public PromotionService(ClothingShopV3Context context)
         {
             _context = context;
         }

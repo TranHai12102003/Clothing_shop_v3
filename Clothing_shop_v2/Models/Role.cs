@@ -9,5 +9,15 @@ public partial class Role
 
     public string RoleName { get; set; } = null!;
 
+    public string? CreatedBy { get; set; }
+
+    public string? UpdatedBy { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
+
+    public DateTime? UpdatedDate { get; set; }
+
+    public bool? IsActive { get; set; }
+
     public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

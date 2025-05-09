@@ -12,10 +12,10 @@ namespace Clothing_shop_v2.Controllers
     public class ProductController : Controller
     {
         private readonly ILogger<ProductController> _logger;
-        private readonly ClothingShopDbContext _context;
+        private readonly ClothingShopV3Context _context;
         private readonly IProductImageService _productImageService;
         private readonly IProductService _productService;
-        public ProductController(ILogger<ProductController> logger, ClothingShopDbContext context, IProductImageService productImageService, IProductService productService)
+        public ProductController(ILogger<ProductController> logger, ClothingShopV3Context context, IProductImageService productImageService, IProductService productService)
         {
             _logger = logger;
             _context = context;

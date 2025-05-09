@@ -10,7 +10,7 @@ namespace Clothing_shop_v2.VModels
         [Required(ErrorMessage = "Vui lòng nhập tên đăng nhập.")]
         public string Username { get; set; } = null!;
 
-        public DateTime? BirthDate { get; set; }
+        public DateOnly? BirthDate { get; set; }
 
         [Required(ErrorMessage = "Vui lòng chọn giới tính.")]
         public string Gender { get; set; } = null!;

@@ -9,15 +9,21 @@ public partial class CustomerType
 
     public string TypeName { get; set; } = null!;
 
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; }
 
     public int? MinOrderCount { get; set; }
 
     public decimal? MinTotalAmount { get; set; }
 
-    public DateTime CreatedDate { get; set; }
+    public string? CreatedBy { get; set; }
+
+    public string? UpdatedBy { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
 
     public DateTime? UpdatedDate { get; set; }
+
+    public bool? IsActive { get; set; }
 
     public virtual ICollection<User> Users { get; set; } = new List<User>();
 

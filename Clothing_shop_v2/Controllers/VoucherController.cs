@@ -11,8 +11,8 @@ namespace Clothing_shop_v2.Controllers
     public class VoucherController : Controller
     {
         private readonly IVoucherService _voucherService;
-        private readonly ClothingShopDbContext _context;
-        public VoucherController(IVoucherService voucherService, ClothingShopDbContext context)
+        private readonly ClothingShopV3Context _context;
+        public VoucherController(IVoucherService voucherService, ClothingShopV3Context context)
         {
             _voucherService = voucherService;
             _context = context;

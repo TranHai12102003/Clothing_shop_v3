@@ -50,7 +50,7 @@
         <thead>
             <tr>
                 <th>Tên khuyến mãi</th>
-                <th>Phần trăm giảm</th>
+                <th>Loại giảm giá</th>
                 <th>Ngày bắt đầu</th>
                 <th>Ngày kết thúc</th>
                 <th>Trạng thái</th>
@@ -62,14 +62,14 @@
             {
                 <tr>
                     <td>@promo.PromotionName</td>
-                    <td>@promo.PercentDiscount %</td>
+                    <td>@promo.DiscountType %</td>
                     <td>@promo.StartDate.ToString("dd/MM/yyyy")</td>
                     <td>@promo.EndDate.ToString("dd/MM/yyyy")</td>
                     <td class="text-center">
                         <form asp-action="ToggleActive" method="post" class="d-inline">
                             <input type="hidden" name="id" value="@promo.Id" />
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="isActive" value="true" @(promo.IsActive ? "checked" : "") onchange="this.form.submit()">
+                                <input class="form-check-input" type="checkbox" name="isActive" value="true" @(promo.IsActive ==true ? "checked" : "") onchange="this.form.submit()">
                             </div>
                         </form>
                     </td>

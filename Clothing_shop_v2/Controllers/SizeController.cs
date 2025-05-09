@@ -11,9 +11,9 @@ namespace Clothing_shop_v2.Controllers
     public class SizeController : Controller
     {
         private readonly ILogger<SizeController> _logger;
-        private readonly ClothingShopDbContext _context;
+        private readonly ClothingShopV3Context _context;
 
-        public SizeController(ILogger<SizeController> logger, ClothingShopDbContext context)
+        public SizeController(ILogger<SizeController> logger, ClothingShopV3Context context)
         {
             _logger = logger;
             _context = context;

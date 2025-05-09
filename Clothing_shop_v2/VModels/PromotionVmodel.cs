@@ -8,7 +8,7 @@ namespace Clothing_shop_v2.VModels
         [Required(ErrorMessage = "Vui lòng nhập tên khuyến mãi.")]
         public string PromotionName { get; set; } = null!;
         [Required(ErrorMessage = "Vui lòng nhập phần trăm khuyến mãi.")]
-        public int PercentDiscount { get; set; }
+        public string DiscountType { get; set; }
         [Required(ErrorMessage = "Vui lòng nhập giá trị khuyến mãi.")]
         public decimal DiscountValue { get; set; }
         [Required(ErrorMessage = "Vui lòng nhập ngày bắt đầu khuyến mãi.")]
@@ -16,7 +16,7 @@ namespace Clothing_shop_v2.VModels
         [Required(ErrorMessage = "Vui lòng nhập ngày kết thúc khuyến mãi.")]
         public DateTime EndDate { get; set; }
         [Required(ErrorMessage = "Vui lòng nhập trạng thái khuyến mãi.")]
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
 
     }
     public class PromotionUpdateVmodel : PromotionCreateVmodel
@@ -25,7 +25,7 @@ namespace Clothing_shop_v2.VModels
     }
     public class PromotionGetVmodel : PromotionUpdateVmodel
     {
-        public DateTime CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
     }
     //public class PromotionListViewModel

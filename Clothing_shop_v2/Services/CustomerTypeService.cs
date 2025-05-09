@@ -13,8 +13,8 @@ namespace Clothing_shop_v2.Services
 {
     public class CustomerTypeService : ICustomerTypeService
     {
-        private readonly ClothingShopDbContext _context;
-        public CustomerTypeService(ClothingShopDbContext context)
+        private readonly ClothingShopV3Context _context;
+        public CustomerTypeService(ClothingShopV3Context context)
         {
             _context = context;
         }

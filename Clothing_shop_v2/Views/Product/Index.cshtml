@@ -71,7 +71,7 @@
                                 }
                             </td>
                             <td>@product.Category.CategoryName</td>
-                            <td>@product.CreatedDate.ToString("dd-MM-yyyy HH:mm")</td>
+                            <td>@product.CreatedDate?.ToString("dd-MM-yyyy HH:mm")</td>
                             <td>@(product.UpdatedDate.HasValue ? product.UpdatedDate.Value.ToString("dd-MM-yyyy HH:mm") : "-")</td>
                             <td class="action-buttons">
                                 <a asp-action="Details" asp-controller="Product" asp-route-id="@product.Id" class="action-icon details-icon" title="Chi tiết">

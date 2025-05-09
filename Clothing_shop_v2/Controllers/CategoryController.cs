@@ -14,11 +14,11 @@ namespace Clothing_shop_v2.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly ClothingShopDbContext _context;
+        private readonly ClothingShopV3Context _context;
         private readonly ILogger<CategoryController> _logger;
         private readonly Cloudinary _cloudinary;
         private readonly ICategoryService _categoryService;
-        public CategoryController(ClothingShopDbContext context, ILogger<CategoryController> logger, Cloudinary cloudinary, ICategoryService categoryService)
+        public CategoryController(ClothingShopV3Context context, ILogger<CategoryController> logger, Cloudinary cloudinary, ICategoryService categoryService)
         {
             _context = context;
             _logger = logger;

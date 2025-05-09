@@ -14,9 +14,9 @@ namespace Clothing_shop_v2.Controllers
     public class BannerController : Controller
     {
         private readonly IBannerService _bannerService;
-        private readonly ClothingShopDbContext _context;
+        private readonly ClothingShopV3Context _context;
         private readonly Cloudinary _cloudinary;
-        public BannerController(IBannerService bannerService, Cloudinary cloudinary, ClothingShopDbContext context)
+        public BannerController(IBannerService bannerService, Cloudinary cloudinary, ClothingShopV3Context context)
         {
             _bannerService = bannerService;
             _cloudinary = cloudinary;

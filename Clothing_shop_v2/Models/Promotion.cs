@@ -9,7 +9,7 @@ public partial class Promotion
 
     public string PromotionName { get; set; } = null!;
 
-    public int PercentDiscount { get; set; }
+    public string DiscountType { get; set; } = null!;
 
     public decimal DiscountValue { get; set; }
 
@@ -17,11 +17,15 @@ public partial class Promotion
 
     public DateTime EndDate { get; set; }
 
-    public bool IsActive { get; set; }
+    public string? CreatedBy { get; set; }
 
-    public DateTime CreatedDate { get; set; }
+    public string? UpdatedBy { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
 
     public DateTime? UpdatedDate { get; set; }
+
+    public bool? IsActive { get; set; }
 
     public virtual ICollection<Banner> Banners { get; set; } = new List<Banner>();
 
