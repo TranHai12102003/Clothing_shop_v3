@@ -31,7 +31,8 @@ namespace Clothing_shop_v2.Services
                 await _context.SaveChangesAsync();
                 if (product.imageFiles != null && product.imageFiles.Count > 0)
                 {
-                        var imageResponse = await _productImageService.AddImages(newProduct.Id ,product.imageFiles, null);
+                    //var imageResponse = await _productImageService.AddImages(newProduct.Id ,product.imageFiles, null);
+                    await _productImageService.AddImages(newProduct.Id, product.imageFiles, null);
                 }
                 response = new SuccessResponseResult(newProduct, "Thêm sản phẩm mới thành công");
                 return response;
