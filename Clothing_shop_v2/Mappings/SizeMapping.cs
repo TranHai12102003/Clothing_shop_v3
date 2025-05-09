@@ -11,6 +11,11 @@ namespace Clothing_shop_v2.Mappings
             {
                 Id = size.Id,
                 SizeName = size.SizeName,
+                CreatedDate = size.CreatedDate,
+                CreatedBy = size.CreatedBy,
+                UpdatedDate = size.UpdatedDate,
+                UpdatedBy = size.UpdatedBy,
+                IsActive = size.IsActive,
             };
         }
         public static Size VModelToEntity(SizeCreateVModel sizeVModel)
@@ -18,7 +23,7 @@ namespace Clothing_shop_v2.Mappings
             return new Size
             {
                 SizeName = sizeVModel.SizeName,
-                CreatedDate = DateTime.Now,
+                //CreatedDate = DateTime.Now,
             };
         }
         public static Size VModelToEntity(SizeUpdateVModel sizeVModel, Size existingSize)
@@ -29,7 +34,7 @@ namespace Clothing_shop_v2.Mappings
             }
 
             existingSize.SizeName = sizeVModel.SizeName;
-            existingSize.UpdatedDate = DateTime.Now;
+            //existingSize.UpdatedDate = DateTime.Now;
 
             return existingSize;
         }
