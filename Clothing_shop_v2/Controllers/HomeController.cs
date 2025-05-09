@@ -148,6 +148,10 @@ namespace Clothing_shop_v2.Controllers
                     {
                         return RedirectToAction("Index", "Admin");
                     }
+                    else if (result.Role == "Staff")
+                    {
+                        return RedirectToAction("Index", "Staff");
+                    }
                     else
                     {
                         return RedirectToAction("Index", "Home");

@@ -4,6 +4,7 @@ using Clothing_shop_v2.Models;
 using Clothing_shop_v2.Services;
 using Clothing_shop_v2.Services.ISerivce;
 using Clothing_shop_v2.VModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -59,6 +60,7 @@ namespace Clothing_shop_v2.Controllers
             var response = await _colorService.GetAll(parameters);
             return View(response.Value);
         }
+        [Authorize(Roles ="Admin")]
         [HttpGet]
         public IActionResult Create()
         {
