@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
+using Clothing_shop_v2.Common.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clothing_shop_v2.Models;
@@ -10,9 +12,11 @@ public partial class ClothingShopV3Context : DbContext
     {
     }
 
-    public ClothingShopV3Context(DbContextOptions<ClothingShopV3Context> options)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    public ClothingShopV3Context(DbContextOptions<ClothingShopV3Context> options, IHttpContextAccessor httpContextAccessor)
         : base(options)
     {
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public virtual DbSet<Banner> Banners { get; set; }
@@ -460,4 +464,57 @@ public partial class ClothingShopV3Context : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        SetAuditFields(); // Gọi hàm audit trước khi lưu
+        return await base.SaveChangesAsync(cancellationToken);
+    }
+
+    private string GetCurrentUserRole()
+    {
+        var roleClaim = _httpContextAccessor.HttpContext?.User?.Claims
+            .FirstOrDefault(c => c.Type == ClaimTypes.Role || c.Type == "role");
+
+        return roleClaim?.Value ?? "System";
+    }
+
+    private void SetAuditFields()
+    {
+        var currentRole = GetCurrentUserRole();
+
+        var entries = ChangeTracker.Entries()
+            .Where(e => (e.Entity is BaseEntity || e.Entity is AuditEntity)
+                        && (e.State == EntityState.Added || e.State == EntityState.Modified));
+
+        foreach (var entry in entries)
+        {
+            if (entry.Entity is BaseEntity baseEntity)
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    baseEntity.CreatedDate = DateTime.Now;
+                    baseEntity.CreatedBy = currentRole;
+                }
+                if (entry.State == EntityState.Modified)
+                {
+                    baseEntity.UpdatedDate = DateTime.Now;
+                    baseEntity.UpdatedBy = currentRole;
+                }
+            }
+            else if (entry.Entity is AuditEntity auditEntity)
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    auditEntity.CreatedDate = DateTime.Now;
+                    auditEntity.CreatedBy = currentRole;
+                }
+                if (entry.State == EntityState.Modified)
+                {
+                    auditEntity.UpdatedDate = DateTime.Now;
+                    auditEntity.UpdatedBy = currentRole;
+                }
+            }
+        }
+    }
 }
