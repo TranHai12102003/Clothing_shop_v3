@@ -2,7 +2,8 @@
 
 @{
     ViewData["Title"] = "Danh sách màu";
-    Layout = "_LayoutAdmin";
+    // Layout = "_LayoutAdmin";
+    Layout = User.IsInRole("Admin") ? "_LayoutAdmin" : "_LayoutStaff";
 }
 
 <div class="card-body">
