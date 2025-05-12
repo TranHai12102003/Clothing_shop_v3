@@ -29,6 +29,7 @@ namespace Clothing_shop_v2.VModels
     {
         public List<ProductImageGetVModel> ProductImages { get; set; } = new List<ProductImageGetVModel>();
         public List<VariantGetVModel> Variants { get; set; } = new List<VariantGetVModel>();
+        //public List<CategoryGetVModel> Categories { get; set; } = new List<CategoryGetVModel>();
     }
 
     public class ProductListViewModel
