@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Clothing_shop_v2.Common.Constants;
+using Clothing_shop_v2.Common.Contansts;
 
 namespace Clothing_shop_v2.VModels
 {
@@ -26,6 +27,8 @@ namespace Clothing_shop_v2.VModels
 
     public class VariantGetVModel : VariantUpdateVModel
     {
+        public IdNameVModel Size { get; set; } = null!;
+        public IdNameVModel Color { get; set; } = null!;
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
     }

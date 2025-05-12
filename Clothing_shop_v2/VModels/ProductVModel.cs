@@ -24,6 +24,13 @@ namespace Clothing_shop_v2.VModels
         public string PrimaryImageUrl { get; set; } // URL của ảnh chính
         public decimal Price { get; set; } // Giá sản phẩm
     }
+
+    public class ProductDetailVModel : ProductGetVModel
+    {
+        public List<ProductImageGetVModel> ProductImages { get; set; } = new List<ProductImageGetVModel>();
+        public List<VariantGetVModel> Variants { get; set; } = new List<VariantGetVModel>();
+    }
+
     public class ProductListViewModel
     {
         public IEnumerable<ProductGetVModel> Products { get; set; }

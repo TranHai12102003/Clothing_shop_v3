@@ -1,4 +1,5 @@
-﻿using Clothing_shop_v2.Models;
+﻿using Clothing_shop_v2.Common.Contansts;
+using Clothing_shop_v2.Models;
 using Clothing_shop_v2.VModels;
 
 namespace Clothing_shop_v2.Mappings
@@ -7,7 +8,7 @@ namespace Clothing_shop_v2.Mappings
     {
         public static VariantGetVModel EntityGetVModel(Variant variant)
         {
-            return new VariantGetVModel
+            var vModel = new VariantGetVModel
             {
                 Id = variant.Id,
                 ProductId = variant.ProductId,
@@ -19,6 +20,23 @@ namespace Clothing_shop_v2.Mappings
                 CreatedDate = variant.CreatedDate,
                 UpdatedDate = variant.UpdatedDate
             };
+            if(variant.Size != null)
+            {
+                vModel.Size = new IdNameVModel
+                {
+                    Id = variant.Size.Id,
+                    Name = variant.Size.SizeName
+                };
+            }
+            if (variant.Color != null)
+            {
+                vModel.Color = new IdNameVModel
+                {
+                    Id = variant.Color.Id,
+                    Name = variant.Color.ColorName
+                };
+            }
+            return vModel;
         }
         public static Variant VModelToEntity(VariantCreateVModel variantVModel)
         {
