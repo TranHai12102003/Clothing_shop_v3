@@ -9,6 +9,7 @@ namespace Clothing_shop_v2.Services.ISerivce
     {
         Task<ActionResult<PaginationModel<ProductGetVModel>>> GetAll(ProductFilterParams parameters);
         Task<ActionResult<Product>> GetById(int id);
+        Task<ActionResult<ProductDetailVModel>> GetProductDetail (int id);
         Task<ResponseResult> Create(ProductCreateVModel product);
         Task<ResponseResult> Update(ProductUpdateVModel product);
         Task<ResponseResult> Delete(int id);

@@ -119,6 +119,30 @@ namespace Clothing_shop_v2.Services
             return product;
         }
 
+        public async Task<ActionResult<ProductDetailVModel>> GetProductDetail(int id)
+        {
+            var product = await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Size)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Color)
+                .Include(x => x.ProductImages)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (product == null)
+            {
+                Console.WriteLine($"Product with ID {id} not found.");
+                return null;
+            }
+            Console.WriteLine($"Product ID: {id}, Variants Count: {product.Variants.Count}");
+            foreach (var v in product.Variants)
+            {
+                Console.WriteLine($"Variant ID: {v.Id}, SizeId: {v.SizeId}, Size: {v.Size?.SizeName}, ColorId: {v.ColorId}, Color: {v.Color?.ColorName}");
+            }
+            var productVModel = ProductMapping.EntityToDetailVModel(product);
+            return productVModel;
+        }
+
         public async Task<ResponseResult> Update(ProductUpdateVModel product)
         {
             var response = new ResponseResult();
