@@ -39,7 +39,7 @@ namespace Clothing_shop_v2.Services
                 return "Vui lòng tải lên ít nhất một hình ảnh.";
 
             // Validate file
-            string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
+            string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif",".webp" };
             foreach (var file in imageFiles)
             {
                 var ext = Path.GetExtension(file.FileName).ToLower();
