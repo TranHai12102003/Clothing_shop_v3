@@ -76,25 +76,25 @@
             </li>
             <li class="nav-item active">
                 <a class="nav-link" asp-controller="Color" asp-action="Index">
-                    <i class="fa-solid fa-tags"></i>
+                    <i class="fa-solid fa-palette"></i>
                     <span>Quản lý Màu sắc</span>
                 </a>
             </li>
             <li class="nav-item active">
                 <a class="nav-link" asp-controller="Product" asp-action="Index">
-                    <i class="fa-solid fa-tags"></i>
+                    <i class="fa-brands fa-product-hunt"></i>
                     <span>Quản lý Sản phẩm</span>
                 </a>
             </li>
             <li class="nav-item active">
                 <a class="nav-link" asp-controller="Promotion" asp-action="Index">
-                    <i class="fa-solid fa-tags"></i>
+                    <i class="fa-solid fa-percent"></i>
                     <span>Quản lý khuyến mãi</span>
                 </a>
             </li>
             <li class="nav-item active">
                 <a class="nav-link" asp-controller="Banner" asp-action="Index">
-                    <i class="fa-solid fa-tags"></i>
+                    <i class="fa-solid fa-sliders"></i>
                     <span>Quản lý Banner</span>
                 </a>
             </li>
@@ -106,13 +106,13 @@
             </li>
             <li class="nav-item active">
                 <a class="nav-link" asp-controller="CustomerType" asp-action="Index">
-                    <i class="fa-solid fa-tags"></i>
+                    <i class="fa-solid fa-user-tag"></i>
                     <span>Quản lý loại khách hàng</span>
                 </a>
             </li>
             <li class="nav-item active">
                 <a class="nav-link" asp-controller="Voucher" asp-action="Index">
-                    <i class="fa-solid fa-tags"></i>
+                    <i class="fa-solid fa-ticket"></i>
                     <span>Quản lý voucher</span>
                 </a>
             </li>
@@ -303,7 +303,7 @@
                         <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                               data-bs-toggle="dropdown" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">
                                     @User.Identity.Name (@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value)
                                 </span>
