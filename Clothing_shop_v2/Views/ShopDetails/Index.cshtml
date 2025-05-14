@@ -210,7 +210,7 @@
                     <small class="pt-1">(50 Reviews)</small>
                 </div>
                 <h3 class="font-weight-semi-bold mb-4">$@Model.Price.ToString("F2")</h3>
-                <p class="mb-4">@Model.Description</p>
+            <p class="mb-4">@Html.Raw(Model.Description)</p>
                 <div class="d-flex mb-3">
                     <p class="text-dark font-weight-medium mb-0 mr-3">Sizes:</p>
                     <form id="size-form">
@@ -287,7 +287,7 @@
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="tab-pane-1">
                         <h4 class="mb-3">Product Description</h4>
-                        <p>@Model.Description</p>
+                    <p>@Html.Raw(Model.Description)</p>
                     </div>
                     <div class="tab-pane fade" id="tab-pane-2">
                         <h4 class="mb-3">Additional Information</h4>

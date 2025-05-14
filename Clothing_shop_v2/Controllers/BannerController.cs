@@ -74,11 +74,11 @@ namespace Clothing_shop_v2.Controllers
                 }
 
                 // Kiểm tra định dạng file
-                string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
+                string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif",".webp" };
                 string fileExtension = Path.GetExtension(vmodel.ImageFile.FileName).ToLower();
                 if (!allowedExtensions.Contains(fileExtension))
                 {
-                    ModelState.AddModelError("ImageFile", "Ảnh không hợp lệ. Chỉ cho phép ảnh thuộc: .jpg, .jpeg, .png, .gif");
+                    ModelState.AddModelError("ImageFile", "Ảnh không hợp lệ. Chỉ cho phép ảnh thuộc: .jpg, .jpeg, .png, .gif,.webp");
                     await LoadViewBagData();
                     return View(vmodel);
                 }
@@ -87,7 +87,7 @@ namespace Clothing_shop_v2.Controllers
                 var uploadParams = new ImageUploadParams()
                 {
                     File = new FileDescription(vmodel.ImageFile.FileName, vmodel.ImageFile.OpenReadStream()),
-                    Transformation = new Transformation().Width(500).Height(500).Crop("fill"),
+                    //Transformation = new Transformation().Width(500).Height(500).Crop("fill"),
                     Folder = "ClothingShop/Banner",
                     UseFilename = true,
                     UniqueFilename = false,
@@ -179,11 +179,11 @@ namespace Clothing_shop_v2.Controllers
                 }
 
                 // Kiểm tra định dạng file
-                string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
+                string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif",".webp" };
                 string fileExtension = Path.GetExtension(vmodel.ImageFile.FileName).ToLower();
                 if (!allowedExtensions.Contains(fileExtension))
                 {
-                    ModelState.AddModelError("ImageFile", "Ảnh không hợp lệ. Chỉ cho phép ảnh thuộc: .jpg, .jpeg, .png, .gif");
+                    ModelState.AddModelError("ImageFile", "Ảnh không hợp lệ. Chỉ cho phép ảnh thuộc: .jpg, .jpeg, .png, .gif, .webp");
                     await LoadViewBagData();
                     return View(vmodel);
                 }
@@ -192,7 +192,7 @@ namespace Clothing_shop_v2.Controllers
                 var uploadParams = new ImageUploadParams()
                 {
                     File = new FileDescription(vmodel.ImageFile.FileName, vmodel.ImageFile.OpenReadStream()),
-                    Transformation = new Transformation().Width(500).Height(500).Crop("fill"),
+                    //Transformation = new Transformation().Width(500).Height(500).Crop("fill"),
                     Folder = "ClothingShop/Banner",
                     UseFilename = true,
                     UniqueFilename = false,

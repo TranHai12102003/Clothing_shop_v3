@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Clothing_shop_v2.Common.Models;
 using Clothing_shop_v2.Services.ISerivce;
 using Clothing_shop_v2.Services;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Clothing_shop_v2.Controllers
 {
@@ -113,11 +114,11 @@ namespace Clothing_shop_v2.Controllers
                 }
 
                 // Kiểm tra định dạng file
-                string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
+                string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif",".webp" };
                 string fileExtension = Path.GetExtension(vmodel.ImageFile.FileName).ToLower();
                 if (!allowedExtensions.Contains(fileExtension))
                 {
-                    ModelState.AddModelError("ImageFile", "Ảnh không hợp lệ. Chỉ cho phép ảnh thuộc: .jpg, .jpeg, .png, .gif");
+                    ModelState.AddModelError("ImageFile", "Ảnh không hợp lệ. Chỉ cho phép ảnh thuộc: .jpg, .jpeg, .png, .gif,.webp");
                     return View(vmodel);
                 }
 
@@ -200,11 +201,11 @@ namespace Clothing_shop_v2.Controllers
                 }
 
                 // Kiểm tra định dạng file
-                string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
+                string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif",".webp" };
                 string fileExtension = Path.GetExtension(vModel.ImageFile.FileName).ToLower();
                 if (!allowedExtensions.Contains(fileExtension))
                 {
-                    ModelState.AddModelError("ImageFile", "Ảnh không hợp lệ. Chỉ cho phép ảnh thuộc: .jpg, .jpeg, .png, .gif");
+                    ModelState.AddModelError("ImageFile", "Ảnh không hợp lệ. Chỉ cho phép ảnh thuộc: .jpg, .jpeg, .png, .gif, .webp");
                     return View(vModel);
                 }
 
