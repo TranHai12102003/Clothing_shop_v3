@@ -9,9 +9,9 @@ namespace Clothing_shop_v2.VModels
 
         public int? ParentCategoryId { get; set; }
 
-        public DateTime? CreatedDate { get; set; }
+        //public DateTime? CreatedDate { get; set; }
 
-        public DateTime? UpdatedDate { get; set; }
+        //public DateTime? UpdatedDate { get; set; }
 
         public bool? IsActive { get; set; }
 
@@ -25,6 +25,8 @@ namespace Clothing_shop_v2.VModels
     }
     public class CategoryGetVModel : CategoryUpdateVModel
     {
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
     }
     public class CategoryListViewModel
     {

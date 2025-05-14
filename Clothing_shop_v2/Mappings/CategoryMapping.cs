@@ -25,8 +25,8 @@ namespace Shopapp.Mappings
             {
                 CategoryName = categoryVModel.CategoryName,
                 ParentCategoryId = categoryVModel.ParentCategoryId,
-                CreatedDate = DateTime.Now,
-                UpdatedDate = null,
+                //CreatedDate = DateTime.Now,
+                //UpdatedDate = null,
                 IsActive = categoryVModel.IsActive,
                 ImageUrl = categoryVModel.ImageUrl
             };
@@ -39,8 +39,8 @@ namespace Shopapp.Mappings
             }
             category.CategoryName = categoryVModel.CategoryName;
             category.ParentCategoryId = categoryVModel.ParentCategoryId;
-            category.CreatedDate = categoryVModel.CreatedDate;
-            category.UpdatedDate = DateTime.Now;
+            //category.CreatedDate = categoryVModel.CreatedDate;
+            //category.UpdatedDate = DateTime.Now;
             category.IsActive = categoryVModel.IsActive;
             category.ImageUrl = categoryVModel.ImageUrl;
             return category;
