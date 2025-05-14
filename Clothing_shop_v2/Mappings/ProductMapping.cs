@@ -46,7 +46,7 @@ namespace Clothing_shop_v2.Mappings
                 ProductName = productVModel.ProductName,
                 Description = productVModel.Description,
                 CategoryId = productVModel.CategoryId,
-                CreatedDate = DateTime.Now,
+                //CreatedDate = DateTime.Now,
             };
         }
         public static Product VModelToEntity(ProductUpdateVModel productVModel, Product existingProduct)
@@ -58,7 +58,7 @@ namespace Clothing_shop_v2.Mappings
             existingProduct.ProductName = productVModel.ProductName;
             existingProduct.Description = productVModel.Description;
             existingProduct.CategoryId = productVModel.CategoryId;
-            existingProduct.UpdatedDate = DateTime.Now;
+            //existingProduct.UpdatedDate = DateTime.Now;
             return existingProduct;
         }
         public static ProductDetailVModel EntityToDetailVModel(Product product)

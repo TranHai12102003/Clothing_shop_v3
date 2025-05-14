@@ -1,8 +1,11 @@
-﻿using Clothing_shop_v2.Common.Models;
+﻿using System.Drawing;
+using ClosedXML.Excel;
+using Clothing_shop_v2.Common.Models;
 using Clothing_shop_v2.Mappings;
 using Clothing_shop_v2.Models;
 using Clothing_shop_v2.Services;
 using Clothing_shop_v2.Services.ISerivce;
+using Clothing_shop_v2.Utilities;
 using Clothing_shop_v2.VModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -286,6 +289,65 @@ namespace Clothing_shop_v2.Controllers
                 .Select(c => new { c.Id, c.ColorName })
                 .ToListAsync();
             return View(product.Value);
+        }
+        [HttpGet]
+        public async Task<IActionResult> ExportToExcel(ProductFilterParams parameters)
+        {
+            try
+            {
+                // Lấy toàn bộ sản phẩm
+                var productList = await _productService.GetAllProductsAsync(parameters);
+
+                // Kiểm tra null hoặc rỗng
+                if (productList == null || !productList.Any())
+                {
+                    TempData["ErrorMessage"] = "Không có sản phẩm để xuất.";
+                    return RedirectToAction("Index");
+                }
+
+                // Định nghĩa tiêu đề cột
+                var columnHeaders = new List<string>
+            {
+                "#",
+                "Tên sản phẩm",
+                "Ảnh",
+                "Danh mục",
+                "Mô tả",
+                "Ngày tạo",
+                "Ngày cập nhật"
+            };
+
+                // Định nghĩa ánh xạ cột
+                var columnSelectors = new List<Func<ProductGetVModel, int, object>>
+            {
+                (p, index) => index + 1, // Số thứ tự
+                (p, index) => p.ProductName,
+                (p, index) => p.PrimaryImageUrl ?? "Không có ảnh",
+                (p, index) => p.Category?.CategoryName ?? "Không có danh mục",
+                (p, index) => p.Description,
+                (p, index) => p.CreatedDate,
+                (p, index) => p.UpdatedDate
+            };
+
+                // Gọi hàm xuất Excel chung
+                var content = ExcelExporter.ExportToExcel(
+                    productList,
+                    columnHeaders,
+                    columnSelectors,
+                    "Products",
+                    true
+                );
+                // Trả về file Excel
+                var result = File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Products_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+
+                TempData["SuccessMessage"] = "Xuất file Excel thành công!";
+                return result;
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Lỗi khi xuất file Excel: " + ex.Message;
+                return RedirectToAction("Index");
+            }
         }
     }
 }

@@ -29,6 +29,9 @@
 
     <div class="actions">
         <a asp-action="Create" class="btn create-btn"><i class="fas fa-plus"></i> TẠO MỚI</a>
+        <a asp-action="ExportToExcel" asp-route-searchString="@Context.Request.Query["searchString"]" asp-route-pageSize="@Model.PageSize" class="btn export-btn">
+            <i class="fas fa-arrow-down me-2"></i>XUẤT FILE
+        </a>
     </div>
 
     <div class="search-bar">
@@ -338,6 +341,29 @@
                 background-color: #ccc;
                 cursor: not-allowed;
             }
+
+    .actions .export-btn {
+        padding: 8px 20px;
+        border: 1px solid #000;
+        border-radius: 25px; 
+        background-color: #fff; 
+        color: #000; 
+        font-size: 14px;
+        font-weight: normal; 
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: none;
+    }
+
+        .actions .export-btn:hover {
+            background-color: #f0f0f0; /* Hiệu ứng hover nhẹ (tùy chọn) */
+            color: #000; /* Giữ màu chữ khi hover */
+        }
+
+        .actions .export-btn i {
+            font-size: 14px; /* Kích thước icon bằng chữ */
+        }
 
     /* Responsive */
     @@media screen and (max-width: 768px) {

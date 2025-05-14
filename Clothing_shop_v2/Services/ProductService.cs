@@ -100,6 +100,19 @@ namespace Clothing_shop_v2.Services
             };
         }
 
+        public async Task<List<ProductGetVModel>> GetAllProductsAsync(ProductFilterParams parameters)
+        {
+            IQueryable<Product> query = _context.Products
+            .Include(p => p.Category)
+            .Include(p => p.ProductImages)
+            .Include(p => p.Variants)
+            .Where(BuildQueryable(parameters));
+
+            return await query
+                .Select(x => ProductMapping.EntityToVModel(x))
+                .ToListAsync();
+        }
+
         public async Task<ActionResult<Product>> GetById(int id)
         {
             var product = await _context.Products
