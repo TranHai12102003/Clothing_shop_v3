@@ -185,7 +185,13 @@ namespace Clothing_shop_v2.Services
         private Expression<Func<Product, bool>> BuildQueryable(ProductFilterParams fParams)
         {
             return x =>
-                (fParams.SearchString == null || (x.ProductName != null && x.ProductName.Contains(fParams.SearchString)));
+                (fParams.SearchString == null || (x.ProductName != null && x.ProductName.Contains(fParams.SearchString)) &&
+                (fParams.IsActive == null || x.IsActive == fParams.IsActive)) &&
+                (fParams.CategoryId == null || (x.CategoryId != null && x.CategoryId == fParams.CategoryId)) &&
+                (fParams.MinPrice == null || (x.Variants != null && x.Variants.Any(v => v.Price >= fParams.MinPrice))) &&
+                (fParams.MaxPrice == null || (x.Variants != null && x.Variants.Any(v => v.Price <= fParams.MaxPrice))) &&
+                (fParams.SizeId == null || (x.Variants != null && x.Variants.Any(v => v.SizeId == fParams.SizeId))) &&
+                (fParams.ColorId == null || (x.Variants != null && x.Variants.Any(v => v.ColorId == fParams.ColorId)));
         }
     }
 }
