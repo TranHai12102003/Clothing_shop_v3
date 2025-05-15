@@ -152,10 +152,10 @@
     <div class="row px-xl-5">
         <!-- Shop Sidebar Start -->
         <div class="col-lg-3 col-md-12">
-            <!-- Price Start -->
-            <div class="border-bottom mb-4 pb-4">
-                <h5 class="font-weight-semi-bold mb-4">Filter by price</h5>
-                <form asp-action="Index" method="get">
+            <form asp-action="Index" method="get">
+                <!-- Price Start -->
+                <div class="border-bottom mb-4 pb-4">
+                    <h5 class="font-weight-semi-bold mb-4">Filter by price</h5>
                     <div class="form-group">
                         <label for="MinPrice">Min Price</label>
                         <input type="number" class="form-control" id="MinPrice" name="MinPrice" step="0.01" min="0" value="@(Context.Request.Query["MinPrice"])" placeholder="Enter minimum price">
@@ -164,14 +164,11 @@
                         <label for="MaxPrice">Max Price</label>
                         <input type="number" class="form-control" id="MaxPrice" name="MaxPrice" step="0.01" min="0" value="@(Context.Request.Query["MaxPrice"])" placeholder="Enter maximum price">
                     </div>
-                    <button type="submit" class="btn btn-primary mt-3" style="width: 100%;">Apply Filters</button>
-                </form>
-            </div>
-            <!-- Price End -->
-            <!-- Color Start -->
-            <div class="border-bottom mb-4 pb-4">
-                <h5 class="font-weight-semi-bold mb-4">Filter by color</h5>
-                <form asp-action="Index" method="get">
+                </div>
+                <!-- Price End -->
+                <!-- Color Start -->
+                <div class="border-bottom mb-4 pb-4">
+                    <h5 class="font-weight-semi-bold mb-4">Filter by color</h5>
                     <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                         <input type="checkbox" class="custom-control-input" checked id="color-all" name="color-all" value="all">
                         <label class="custom-control-label" for="color-all">All Color</label>
@@ -190,14 +187,11 @@
                             </div>
                         }
                     }
-                    <button type="submit" class="btn btn-primary mt-3" style="width: 100%;">Apply Filters</button>
-                </form>
-            </div>
-            <!-- Color End -->
-            <!-- Size Start -->
-            <div class="mb-5">
-                <h5 class="font-weight-semi-bold mb-4">Filter by size</h5>
-                <form asp-action="Index" method="get">
+                </div>
+                <!-- Color End -->
+                <!-- Size Start -->
+                <div class="mb-5">
+                    <h5 class="font-weight-semi-bold mb-4">Filter by size</h5>
                     <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                         <input type="checkbox" class="custom-control-input" checked id="size-all" name="size-all" value="all">
                         <label class="custom-control-label" for="size-all">All Size</label>
@@ -216,10 +210,18 @@
                             </div>
                         }
                     }
-                    <button type="submit" class="btn btn-primary mt-3" style="width: 100%;">Apply Filters</button>
-                </form>
-            </div>
-            <!-- Size End -->
+                </div>
+                <!-- Size End -->
+                <!-- Hidden inputs to preserve other parameters -->
+                <input type="hidden" name="SearchString" value="@(Context.Request.Query["SearchString"])">
+                <input type="hidden" name="CategoryId" value="@(Context.Request.Query["CategoryId"])">
+                <input type="hidden" name="sortBy" value="@(Context.Request.Query["sortBy"])">
+                <input type="hidden" name="PageNumber" value="@(Context.Request.Query["PageNumber"])">
+                <input type="hidden" name="PageSize" value="@(Context.Request.Query["PageSize"])">
+
+                <!-- Submit button for all filters -->
+                <button type="submit" class="btn btn-primary mb-3" style="width: 100%;">Apply All Filters</button>
+            </form>
         </div>
         <!-- Shop Sidebar End -->
         <!-- Shop Product Start -->
