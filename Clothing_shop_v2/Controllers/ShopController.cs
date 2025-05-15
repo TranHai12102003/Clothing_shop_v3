@@ -25,9 +25,6 @@ namespace Clothing_shop_v2.Controllers
         }
         public async Task<IActionResult> Index([FromQuery] ProductFilterParams filterParams, string sortBy = null)
         {
-            //// Đảm bảo PageNumber và PageSize không bị đặt thành giá trị không hợp lệ
-            //filterParams.PageNumber = filterParams.PageNumber < 1 ? Numbers.Pagination.DefaultPageNumber : filterParams.PageNumber;
-            //filterParams.PageSize = filterParams.PageSize < 1 ? Numbers.Pagination.DefaultPageSize : filterParams.PageSize;
 
             // Gọi action GetAll
             var productResult = await _productService.GetAll(filterParams); // GetAll trả về Task<ActionResult<PaginationModel<ProductGetVModel>>>

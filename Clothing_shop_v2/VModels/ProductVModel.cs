@@ -49,8 +49,8 @@ namespace Clothing_shop_v2.VModels
         public int? CategoryId { get; set; }
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
-        public int? SizeId { get; set; } // Để lọc theo kích thước
-        public int? ColorId { get; set; } // Để lọc theo màu sắc
+        public int[] SizeIds { get; set; } // Để lọc theo kích thước
+        public int[] ColorIds { get; set; } // Để lọc theo màu sắc
         public int PageSize { get; set; } = Numbers.Pagination.DefaultPageSize;
         public int PageNumber { get; set; } = Numbers.Pagination.DefaultPageNumber;
     }
