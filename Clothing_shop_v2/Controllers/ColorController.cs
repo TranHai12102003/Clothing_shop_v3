@@ -186,5 +186,20 @@ namespace Clothing_shop_v2.Controllers
             TempData["ErrorMessage"] = response.Message;
             return RedirectToAction("Index");
         }
+        [HttpPost]
+        public async Task<IActionResult> ToggleActive(int id, bool isActive =false)
+        {
+            var response = await _colorService.ToggleActive(id, isActive);
+            if (response.IsSuccess)
+            {
+                TempData["SuccessMessage"] = response.Message; // Lưu thông báo thành công
+            }
+            else
+            {
+                TempData["ErrorMessage"] = response.Message; // Lưu thông báo lỗi
+            }
+            return RedirectToAction("Index");
+        }
+
     }
 }

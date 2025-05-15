@@ -53,6 +53,7 @@
                     <th>#</th>
                     <th>Tên màu</th>
                     <th>Mã màu</th>
+                    <th>Trạng thái</th>
                     <th>Ngày tạo</th>
                     <th>Ngày cập nhật</th>
                     <th>Thao tác</th>
@@ -69,6 +70,14 @@
                             <td>
                                 <span class="color-circle" style="background-color: @color.ColorCode;"></span>
                                 @color.ColorCode
+                            </td>
+                            <td class="text-center">
+                                <form asp-action="ToggleActive" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@color.Id" />
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="isActive" value="true" @(color.IsActive == true ? "checked" : "") onchange="this.form.submit()">
+                                    </div>
+                                </form>
                             </td>
                             <td>@color.CreatedDate?.ToString("dd/MM/yyyy HH:mm")</td>
                             <td>@(color.UpdatedDate?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>

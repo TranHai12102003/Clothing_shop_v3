@@ -129,6 +129,28 @@ namespace Clothing_shop_v2.Services
             }
             return true;
         }
+
+        public async Task<ResponseResult> ToggleActive(int id, bool isActive = false)
+        {
+            var response = new ResponseResult();
+            try
+            {
+                var color = await _context.Colors.FirstOrDefaultAsync(x => x.Id == id);
+                if (color == null)
+                {
+                    return new ErrorResponseResult("Không tìm thấy màu");
+                }
+                color.IsActive = isActive;
+                await _context.SaveChangesAsync();
+                response = new SuccessResponseResult(color, "Cập nhật trạng thái màu thành công");
+                return response;
+            }
+            catch (ValidationException ex)
+            {
+                return new ErrorResponseResult(ex.Message);
+            }
+        }
+
         private Expression<Func<Color, bool>> BuildQueryable(ColorFilterParams fParams)
         {
             return x =>

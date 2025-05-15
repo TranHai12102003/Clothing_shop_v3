@@ -56,6 +56,16 @@
                                 <i class="fas fa-arrow-left me-2"></i>Quay lại
                             </a>
                         </div>
+                        <div class="mb-3">
+                            <label asp-for="IsActive" class="form-label fw-bold text-muted">
+                                Trạng thái <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="IsActive" class="form-select">
+                                <option value="true">Hiển thị</option>
+                                <option value="false">Ẩn</option>
+                            </select>
+                            <span asp-validation-for="IsActive" class="text-danger"></span>
+                        </div>
                     </form>
                 </div>
             </div>

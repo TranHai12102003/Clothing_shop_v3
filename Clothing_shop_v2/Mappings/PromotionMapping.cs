@@ -20,7 +20,7 @@ namespace Clothing_shop_v2.Mappings
                 UpdatedDate = promotion.UpdatedDate
             };
         }
-        public static Promotion VModelToEntity(this PromotionCreateVmodel vModel)
+        public static Promotion VModelToEntity(PromotionCreateVmodel vModel)
         {
             return new Promotion
             {
@@ -29,7 +29,7 @@ namespace Clothing_shop_v2.Mappings
                 DiscountValue = vModel.DiscountValue,
                 StartDate = vModel.StartDate,
                 EndDate = vModel.EndDate,
-                IsActive = true,
+                IsActive = vModel.IsActive,
             };
         }
         public static Promotion VModelToEntity(PromotionUpdateVmodel vModel, Promotion promotion)
@@ -44,7 +44,6 @@ namespace Clothing_shop_v2.Mappings
             promotion.StartDate = vModel.StartDate;
             promotion.EndDate = vModel.EndDate;
             promotion.IsActive = vModel.IsActive;
-            promotion.UpdatedDate = DateTime.Now;
             return promotion;
         }
     }
