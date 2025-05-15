@@ -156,35 +156,13 @@
             <div class="border-bottom mb-4 pb-4">
                 <h5 class="font-weight-semi-bold mb-4">Filter by price</h5>
                 <form asp-action="Index" method="get">
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" checked id="price-all" name="priceRange" value="">
-                        <label class="custom-control-label" for="price-all">All Price</label>
-                        <span class="badge border font-weight-normal">1000</span>
+                    <div class="form-group">
+                        <label for="MinPrice">Min Price</label>
+                        <input type="number" class="form-control" id="MinPrice" name="MinPrice" step="0.01" min="0" value="@(Context.Request.Query["MinPrice"])" placeholder="Enter minimum price">
                     </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" id="price-1" name="priceRange" value="0-100">
-                        <label class="custom-control-label" for="price-1">$0 - $100</label>
-                        <span class="badge border font-weight-normal">150</span>
-                    </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" id="price-2" name="priceRange" value="100-200">
-                        <label class="custom-control-label" for="price-2">$100 - $200</label>
-                        <span class="badge border font-weight-normal">295</span>
-                    </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" id="price-3" name="priceRange" value="200-300">
-                        <label class="custom-control-label" for="price-3">$200 - $300</label>
-                        <span class="badge border font-weight-normal">246</span>
-                    </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" id="price-4" name="priceRange" value="300-400">
-                        <label class="custom-control-label" for="price-4">$300 - $400</label>
-                        <span class="badge border font-weight-normal">145</span>
-                    </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
-                        <input type="checkbox" class="custom-control-input" id="price-5" name="priceRange" value="400-500">
-                        <label class="custom-control-label" for="price-5">$400 - $500</label>
-                        <span class="badge border font-weight-normal">168</span>
+                    <div class="form-group">
+                        <label for="MaxPrice">Max Price</label>
+                        <input type="number" class="form-control" id="MaxPrice" name="MaxPrice" step="0.01" min="0" value="@(Context.Request.Query["MaxPrice"])" placeholder="Enter maximum price">
                     </div>
                     <button type="submit" class="btn btn-primary mt-3" style="width: 100%;">Apply Filters</button>
                 </form>
@@ -195,16 +173,18 @@
                 <h5 class="font-weight-semi-bold mb-4">Filter by color</h5>
                 <form asp-action="Index" method="get">
                     <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" checked id="color-all" name="color" value="">
+                        <input type="checkbox" class="custom-control-input" checked id="color-all" name="color-all" value="all">
                         <label class="custom-control-label" for="color-all">All Color</label>
                         <span class="badge border font-weight-normal">1000</span>
                     </div>
                     @if (Model.Colors != null)
                     {
+                        var colorQuery = Context.Request.Query["ColorIds"];
+                        var selectedColors = string.IsNullOrEmpty(colorQuery) ? new int[0] : colorQuery.ToString().Split(',').Select(int.Parse).ToArray();
                         foreach (var color in Model.Colors)
                         {
                             <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                <input type="checkbox" class="custom-control-input" id="color-@color.Id" name="color" value="@color.Id">
+                                <input type="checkbox" class="custom-control-input" id="color-@color.Id" name="ColorIds" value="@color.Id" @(selectedColors.Contains(color.Id) ? "checked" : "")>
                                 <label class="custom-control-label" for="color-@color.Id">@color.ColorName</label>
                                 <span class="badge border font-weight-normal">@color.ColorName</span>
                             </div>
@@ -219,16 +199,18 @@
                 <h5 class="font-weight-semi-bold mb-4">Filter by size</h5>
                 <form asp-action="Index" method="get">
                     <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" checked id="size-all" name="size" value="">
+                        <input type="checkbox" class="custom-control-input" checked id="size-all" name="size-all" value="all">
                         <label class="custom-control-label" for="size-all">All Size</label>
                         <span class="badge border font-weight-normal">1000</span>
                     </div>
                     @if (Model.Sizes != null)
                     {
+                        var sizeQuery = Context.Request.Query["SizeIds"];
+                        var selectedSizes = string.IsNullOrEmpty(sizeQuery) ? new int[0] : sizeQuery.ToString().Split(',').Select(int.Parse).ToArray();
                         foreach (var size in Model.Sizes)
                         {
                             <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                <input type="checkbox" class="custom-control-input" id="size-@size.Id" name="size" value="@size.Id">
+                                <input type="checkbox" class="custom-control-input" id="size-@size.Id" name="SizeIds" value="@size.Id" @(selectedSizes.Contains(size.Id) ? "checked" : "")>
                                 <label class="custom-control-label" for="size-@size.Id">@size.SizeName</label>
                                 <span class="badge border font-weight-normal">@size.SizeName</span>
                             </div>
