@@ -11,5 +11,6 @@ namespace Clothing_shop_v2.Services.ISerivce
         Task<ResponseResult> Create(ColorCreateVModel model);
         Task<ResponseResult> Update(ColorUpdateVModel model);
         Task<ResponseResult> Delete(int id);
+        Task<ResponseResult> ToggleActive(int id, bool isActive = false);
     }
 }

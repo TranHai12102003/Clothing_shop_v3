@@ -51,7 +51,6 @@ namespace Clothing_shop_v2.Mappings
                 UsedCount = model.UsedCount,
                 IsActive = model.IsActive,
                 CustomerTypeId = model.CustomerTypeId,
-                CreatedDate = DateTime.Now,
             };
         }
         public static Voucher VModelToEntity(VoucherUpdateVModel vmodel, Voucher model)
@@ -71,7 +70,6 @@ namespace Clothing_shop_v2.Mappings
             model.UsedCount = vmodel.UsedCount;
             model.IsActive = vmodel.IsActive;
             model.CustomerTypeId = vmodel.CustomerTypeId;
-            model.UpdatedDate = DateTime.Now;
             return model;
         }
     }

@@ -12,6 +12,7 @@ namespace Clothing_shop_v2.Mappings
                 Id = color.Id,
                 ColorName = color.ColorName,
                 ColorCode = color.ColorCode,
+                IsActive = color.IsActive,
                 CreatedDate = color.CreatedDate,
                 UpdatedDate = color.UpdatedDate,
             };
@@ -22,7 +23,7 @@ namespace Clothing_shop_v2.Mappings
             {
                 ColorName = colorVModel.ColorName,
                 ColorCode = colorVModel.ColorCode,
-                CreatedDate = DateTime.Now,
+                IsActive = colorVModel.IsActive,
             };
         }
         public static Color VModelToEntity(ColorUpdateVModel colorVModel, Color existingColor)
@@ -33,7 +34,7 @@ namespace Clothing_shop_v2.Mappings
             }
             existingColor.ColorName = colorVModel.ColorName;
             existingColor.ColorCode = colorVModel.ColorCode;
-            existingColor.UpdatedDate = DateTime.Now;
+            existingColor.IsActive = colorVModel.IsActive;
             return existingColor;
         }
     }

@@ -178,10 +178,10 @@ namespace Clothing_shop_v2.Services
             {
                 throw new ValidationException("Trạng thái là bắt buộc");
             }
-            if (string.IsNullOrEmpty(savedVoucher.CustomerTypeId.ToString()))
-            {
-                throw new ValidationException("Loại khách hàng là bắt buộc");
-            }
+            //if (string.IsNullOrEmpty(savedVoucher.CustomerTypeId.ToString()))
+            //{
+            //    throw new ValidationException("Loại khách hàng là bắt buộc");
+            //}
             return true;
         }
         private Expression<Func<Voucher, bool>> BuildQueryable(VoucherFilterParams fParams)

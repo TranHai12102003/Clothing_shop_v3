@@ -69,7 +69,6 @@ namespace Clothing_shop_v2.Mappings
                 EndDate = bannerCreateVModel.EndDate,
                 IsActive = bannerCreateVModel.IsActive,
                 DisplayOrder = bannerCreateVModel.DisplayOrder,
-                CreatedDate = DateTime.Now
             };
         }
         public static Banner VModelToModel(BannerUpdateVModel bannerUpdateVModel, Banner model)
@@ -87,7 +86,6 @@ namespace Clothing_shop_v2.Mappings
             model.EndDate = bannerUpdateVModel.EndDate;
             model.IsActive = bannerUpdateVModel.IsActive;
             model.DisplayOrder = bannerUpdateVModel.DisplayOrder;
-            model.UpdatedDate = DateTime.Now;
             return model;
         }
     }

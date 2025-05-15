@@ -7,6 +7,7 @@ namespace Clothing_shop_v2.VModels
     {
         public string ColorName { get; set; } = null!;
         public string ColorCode { get; set; } = null!;
+        public bool? IsActive { get; set; }
 
     }
     public class ColorUpdateVModel : ColorCreateVModel
