@@ -72,7 +72,7 @@
     <div class="row border-top px-xl-5">
         <div class="col-lg-3 d-none d-lg-block">
             <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
-                <h6 class="m-0">Categories</h6>
+                <h6 class="m-0">Danh mục</h6>
                 <i class="fa fa-angle-down text-dark"></i>
             </a>
             <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0 bg-light" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 1;">
@@ -113,8 +113,8 @@
                 </button>
                 <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                     <div class="navbar-nav mr-auto py-0">
-                        <a href="index.html" class="nav-item nav-link">Home</a>
-                        <a href="shop.html" class="nav-item nav-link active">Shop</a>
+                        <a asp-controller="Home" asp-action="Index" class="nav-item nav-link">Home</a>
+                        <a asp-action="Index" class="nav-item nav-link active">Shop</a>
                         <a href="detail.html" class="nav-item nav-link">Shop Detail</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
@@ -126,8 +126,22 @@
                         <a href="contact.html" class="nav-item nav-link">Contact</a>
                     </div>
                     <div class="navbar-nav ml-auto py-0">
-                        <a href="" class="nav-item nav-link">Login</a>
-                        <a href="" class="nav-item nav-link">Register</a>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Hi, @User.Identity.Name
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                                    <a class="dropdown-item" asp-controller="Home" asp-action="Profile">Profile</a>
+                                    <a class="dropdown-item" asp-controller="Home" asp-action="Logout">Logout</a>
+                                </div>
+                            </li>
+                        }
+                        else
+                        {
+                            <a asp-action="Login" asp-controller="Home" class="nav-item nav-link">Login</a>
+                        }
                     </div>
                 </div>
             </nav>
@@ -152,7 +166,7 @@
     <div class="row px-xl-5">
         <!-- Shop Sidebar Start -->
         <div class="col-lg-3 col-md-12">
-            <form asp-action="Index" method="get">
+            <form asp-action="Index" method="get" id="filterForm">
                 <!-- Price Start -->
                 <div class="border-bottom mb-4 pb-4">
                     <h5 class="font-weight-semi-bold mb-4">Filter by price</h5>
@@ -170,7 +184,7 @@
                 <div class="border-bottom mb-4 pb-4">
                     <h5 class="font-weight-semi-bold mb-4">Filter by color</h5>
                     <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" checked id="color-all" name="color-all" value="all">
+                        <input type="checkbox" class="custom-control-input all-checkbox" id="color-all" name="color-all" value="all" @(string.IsNullOrEmpty(Context.Request.Query["ColorIds"]) ? "checked" : "")>
                         <label class="custom-control-label" for="color-all">All Color</label>
                         <span class="badge border font-weight-normal">1000</span>
                     </div>
@@ -181,9 +195,9 @@
                         foreach (var color in Model.Colors)
                         {
                             <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                <input type="checkbox" class="custom-control-input" id="color-@color.Id" name="ColorIds" value="@color.Id" @(selectedColors.Contains(color.Id) ? "checked" : "")>
+                                <input type="checkbox" class="custom-control-input color-checkbox" id="color-@color.Id" name="ColorIds" value="@color.Id" @(selectedColors.Contains(color.Id) ? "checked" : "")>
                                 <label class="custom-control-label" for="color-@color.Id">@color.ColorName</label>
-                                <span class="badge border font-weight-normal">@color.ColorName</span>
+                                <span class="badge border font-weight-normal">@color.Variants.Count</span>
                             </div>
                         }
                     }
@@ -193,7 +207,7 @@
                 <div class="mb-5">
                     <h5 class="font-weight-semi-bold mb-4">Filter by size</h5>
                     <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" checked id="size-all" name="size-all" value="all">
+                        <input type="checkbox" class="custom-control-input all-checkbox" id="size-all" name="size-all" value="all" @(string.IsNullOrEmpty(Context.Request.Query["SizeIds"]) ? "checked" : "")>
                         <label class="custom-control-label" for="size-all">All Size</label>
                         <span class="badge border font-weight-normal">1000</span>
                     </div>
@@ -204,9 +218,9 @@
                         foreach (var size in Model.Sizes)
                         {
                             <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                <input type="checkbox" class="custom-control-input" id="size-@size.Id" name="SizeIds" value="@size.Id" @(selectedSizes.Contains(size.Id) ? "checked" : "")>
+                                <input type="checkbox" class="custom-control-input size-checkbox" id="size-@size.Id" name="SizeIds" value="@size.Id" @(selectedSizes.Contains(size.Id) ? "checked" : "")>
                                 <label class="custom-control-label" for="size-@size.Id">@size.SizeName</label>
-                                <span class="badge border font-weight-normal">@size.SizeName</span>
+                                <span class="badge border font-weight-normal">@size.Variants.Count</span>
                             </div>
                         }
                     }
@@ -216,10 +230,8 @@
                 <input type="hidden" name="SearchString" value="@(Context.Request.Query["SearchString"])">
                 <input type="hidden" name="CategoryId" value="@(Context.Request.Query["CategoryId"])">
                 <input type="hidden" name="sortBy" value="@(Context.Request.Query["sortBy"])">
-                <input type="hidden" name="PageNumber" value="@(Context.Request.Query["PageNumber"])">
-                <input type="hidden" name="PageSize" value="@(Context.Request.Query["PageSize"])">
 
-                <!-- Submit button for all filters -->
+                <!-- Submit button -->
                 <button type="submit" class="btn btn-primary mb-3" style="width: 100%;">Apply All Filters</button>
             </form>
         </div>
@@ -384,3 +396,36 @@
 <!-- Footer End -->
 <!-- Back to Top -->
 <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+<script>
+    document.getElementById('filterForm').addEventListener('submit', function (e) {
+        // Remove empty inputs
+        var inputs = this.querySelectorAll('input[name="MinPrice"], input[name="MaxPrice"]');
+        inputs.forEach(input => {
+            if (!input.value.trim()) {
+                input.name = ''; // Remove name to exclude from submission
+            }
+        });
+
+        // Handle "All" checkboxes
+        var colorAll = document.getElementById('color-all');
+        var sizeAll = document.getElementById('size-all');
+        var colorCheckboxes = document.querySelectorAll('.color-checkbox');
+        var sizeCheckboxes = document.querySelectorAll('.size-checkbox');
+
+        if (colorAll.checked && !Array.from(colorCheckboxes).some(cb => cb.checked)) {
+            colorAll.name = ''; // Remove name if no specific colors selected
+        }
+        if (sizeAll.checked && !Array.from(sizeCheckboxes).some(cb => cb.checked)) {
+            sizeAll.name = ''; // Remove name if no specific sizes selected
+        }
+
+        // Remove empty hidden inputs
+        var hiddenInputs = this.querySelectorAll('input[type="hidden"]');
+        hiddenInputs.forEach(input => {
+            if (!input.value.trim()) {
+                input.name = ''; // Remove name to exclude from submission
+            }
+        });
+    });
+</script>
