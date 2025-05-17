@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
+using Clothing_shop_v2.Common.Constants;
 using Clothing_shop_v2.Common.Models;
 using Clothing_shop_v2.Mappings;
 using Clothing_shop_v2.Models;
@@ -154,6 +155,35 @@ namespace Clothing_shop_v2.Services
             }
             var productVModel = ProductMapping.EntityToDetailVModel(product);
             return productVModel;
+        }
+
+        public async Task<List<ProductGetVModel>> RelatedProducts(int productId)
+        {
+            // Lấy sản phẩm hiện tại để lấy CategoryId
+            var currentProduct = await _context.Products
+                .Where(p => p.Id == productId && p.IsActive == true)
+                .Select(p => new { p.CategoryId })
+                .FirstOrDefaultAsync();
+
+            if (currentProduct == null)
+            {
+                return new List<ProductGetVModel>(); // Trả về danh sách rỗng nếu không tìm thấy sản phẩm
+            }
+
+            // Lấy các sản phẩm liên quan trong cùng danh mục
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductImages)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Color)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Size)
+                .Where(p => p.IsActive == true && p.CategoryId == currentProduct.CategoryId && p.Id != productId)
+                //.Take(Numbers.Four) // Giới hạn số lượng sản phẩm trả về
+                .ToListAsync();
+
+            var productVModels = products.Select(x => ProductMapping.EntityToVModel(x)).ToList();
+            return productVModels;
         }
 
         public async Task<ResponseResult> Update(ProductUpdateVModel product)

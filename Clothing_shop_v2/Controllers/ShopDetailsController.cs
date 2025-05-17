@@ -29,7 +29,21 @@ namespace Clothing_shop_v2.Controllers
             ViewBag.Categories = await _context.Categories
                 .Where(c => c.IsActive == true)
                 .Select(c => CategoryMapping.EntityToVModel(c)).ToListAsync();
+            var relatedProducts = await _productService.RelatedProducts(id);
+            if (relatedProducts == null || !relatedProducts.Any())
+            {
+                ViewBag.RelatedProducts = new List<ProductGetVModel>();
+            }
+            else
+            {
+                ViewBag.RelatedProducts = relatedProducts;
+            }
             return View(product.Value);
+        }
+        private async Task<List<ProductGetVModel>> RelatedProducts(int productId)
+        {
+            var relatedProducts = await _productService.RelatedProducts(productId);
+            return relatedProducts;
         }
     }
 }

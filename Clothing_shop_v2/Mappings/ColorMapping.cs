@@ -7,7 +7,7 @@ namespace Clothing_shop_v2.Mappings
     {
         public static ColorGetVModel EntityToVModel(Color color)
         {
-            return new ColorGetVModel
+            var model = new ColorGetVModel
             {
                 Id = color.Id,
                 ColorName = color.ColorName,
@@ -16,6 +16,11 @@ namespace Clothing_shop_v2.Mappings
                 CreatedDate = color.CreatedDate,
                 UpdatedDate = color.UpdatedDate,
             };
+            if(color.Variants != null)
+            {
+                model.Variants = color.Variants.Select(v => VariantMapping.EntityGetVModel(v)).ToList();
+            }
+            return model;
         }
         public static Color VModelToEntity(ColorCreateVModel colorVModel)
         {

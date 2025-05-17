@@ -25,7 +25,7 @@ namespace Clothing_shop_v2.Controllers
         }
         public async Task<IActionResult> Index([FromQuery] ProductFilterParams filterParams, string sortBy = null)
         {
-
+            ViewData["CurrentFilter"] = filterParams;
             // Gọi action GetAll
             var productResult = await _productService.GetAll(filterParams); // GetAll trả về Task<ActionResult<PaginationModel<ProductGetVModel>>>
 

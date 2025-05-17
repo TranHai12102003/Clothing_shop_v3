@@ -1,4 +1,5 @@
-﻿using Clothing_shop_v2.Models;
+﻿using Clothing_shop_v2.Common.Contansts;
+using Clothing_shop_v2.Models;
 using Clothing_shop_v2.VModels;
 
 namespace Clothing_shop_v2.Mappings
@@ -7,7 +8,7 @@ namespace Clothing_shop_v2.Mappings
     {
         public static SizeGetVModel EntityToVModel(Size size)
         {
-            return new SizeGetVModel
+            var model = new SizeGetVModel
             {
                 Id = size.Id,
                 SizeName = size.SizeName,
@@ -17,6 +18,15 @@ namespace Clothing_shop_v2.Mappings
                 UpdatedBy = size.UpdatedBy,
                 IsActive = size.IsActive,
             };
+            if(size.Variants != null)
+            {
+                model.Variants = size.Variants.Select(v => new IdNameVModel
+                {
+                    Id = v.Id,
+                    Name = v.Size.SizeName,
+                }).ToList();
+            }
+            return model;
         }
         public static Size VModelToEntity(SizeCreateVModel sizeVModel)
         {
