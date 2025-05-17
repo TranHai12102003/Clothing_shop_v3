@@ -1,4 +1,5 @@
 ﻿using Clothing_shop_v2.Common.Constants;
+using Clothing_shop_v2.Common.Contansts;
 using Clothing_shop_v2.Models;
 
 namespace Clothing_shop_v2.VModels
@@ -19,6 +20,7 @@ namespace Clothing_shop_v2.VModels
     public class ProductGetVModel : ProductUpdateVModel
     {
         public CategoryGetVModel Category { get; set; } = null!;
+        public IdNameVModel Variant { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public string PrimaryImageUrl { get; set; } // URL của ảnh chính

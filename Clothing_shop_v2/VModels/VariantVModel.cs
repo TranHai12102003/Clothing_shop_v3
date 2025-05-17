@@ -29,6 +29,7 @@ namespace Clothing_shop_v2.VModels
     {
         public IdNameVModel Size { get; set; } = null!;
         public IdNameVModel Color { get; set; } = null!;
+        public ProductGetVModel Product { get; set; } = null!;
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
     }
