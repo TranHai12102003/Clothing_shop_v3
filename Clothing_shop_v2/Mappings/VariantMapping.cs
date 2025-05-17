@@ -36,6 +36,10 @@ namespace Clothing_shop_v2.Mappings
                     Name = variant.Color.ColorName
                 };
             }
+            if (variant.Product != null)
+            {
+                vModel.Product = ProductMapping.EntityToVModel(variant.Product);
+            }
             return vModel;
         }
         public static Variant VModelToEntity(VariantCreateVModel variantVModel)

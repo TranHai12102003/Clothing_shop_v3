@@ -59,7 +59,7 @@
                 <i class="fas fa-heart text-primary"></i>
                 <span class="badge">0</span>
             </a>
-            <a href="" class="btn border">
+            <a asp-action="Index" asp-controller="Cart" class="btn border">
                 <i class="fas fa-shopping-cart text-primary"></i>
                 <span class="badge">0</span>
             </a>
@@ -281,7 +281,7 @@
                                 </div>
                                 <div class="card-footer d-flex justify-content-between bg-light border">
                                     <a asp-action="Index" asp-controller="ShopDetails" asp-route-id="@product.Id" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                                    <a asp-action="AddToCart" asp-controller="Cart" asp-route-id="@product.Id" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                                    @* <a asp-action="AddToCart" asp-controller="Cart" asp-route-id="@product." class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a> *@
                                 </div>
                             </div>
                         </div>
