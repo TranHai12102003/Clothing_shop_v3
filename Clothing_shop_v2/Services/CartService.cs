@@ -20,11 +20,26 @@ namespace Clothing_shop_v2.Services
             var response = new ResponseResult();
             try
             {
-                var newCart = CartMapping.VModelToEntity(cartVModel);
-                _context.Carts.Add(newCart);
+                var variant = await _context.Variants.FindAsync(cartVModel.VariantId);
+                if (variant == null)
+                {
+                    return new ErrorResponseResult("Biến thể sản phẩm không tồn tại.");
+                }
+
+                //Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
+                var existingCart = await _context.Carts
+                    .FirstOrDefaultAsync(x => x.UserId == cartVModel.UserId && x.VariantId == cartVModel.VariantId);
+                if (existingCart != null)
+                {
+                    existingCart.Quantity += cartVModel.Quantity;
+                }
+                else
+                {
+                    var newCart = CartMapping.VModelToEntity(cartVModel);
+                    _context.Carts.Add(newCart);
+                }
                 await _context.SaveChangesAsync();
-                response = new SuccessResponseResult(newCart, "Thêm sản phẩm vào giỏ hàng thành công");
-                return response;
+                return new SuccessResponseResult("Thêm sản phẩm vào giỏ hàng thành công.");
             }
             catch (Exception ex)
             {

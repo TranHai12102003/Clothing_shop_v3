@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Clothing_shop_v2.Mappings;
 using Clothing_shop_v2.Models;
 using Clothing_shop_v2.Services.ISerivce;
+using Clothing_shop_v2.Utilities;
 using Clothing_shop_v2.VModels;
 using Clothing_shop_v2.VModels.Home;
 using Microsoft.AspNetCore.Authentication;
@@ -19,13 +20,15 @@ namespace Clothing_shop_v2.Controllers
         private readonly ClothingShopV3Context _context;
         private readonly IEmailService _emailService;
         private readonly IUserService _userService;
+        private readonly ICartService _cartService;
 
-        public HomeController(ILogger<HomeController> logger, ClothingShopV3Context context, IEmailService emailService,IUserService userService)
+        public HomeController(ILogger<HomeController> logger, ClothingShopV3Context context, IEmailService emailService,IUserService userService, ICartService cartService)
         {
             _logger = logger;
             _context = context;
             _emailService = emailService;
             _userService = userService;
+            _cartService = cartService;
         }
 
         public IActionResult Index()
@@ -142,7 +145,54 @@ namespace Clothing_shop_v2.Controllers
                     var principal = new ClaimsPrincipal(identity);
 
                     await HttpContext.SignInAsync("MyCookieAuth", principal);
+                    //Đồng bộ giỏ hàng
+                    try
+                    {
+                        var cartSession = HttpContext.Session.GetObjectFromJson<List<CartCreateVModel>>("Cart");
+                        if (cartSession != null && cartSession.Any())
+                        {
+                            foreach (var item in cartSession)
+                            {
+                                // Kiểm tra VariantId hợp lệ
+                                var variant = await _context.Variants.FindAsync(item.VariantId);
+                                if (variant == null)
+                                {
+                                    continue; // Bỏ qua nếu VariantId không tồn tại
+                                }
 
+                                // Kiểm tra mục đã tồn tại trong Carts
+                                var existingCart = await _context.Carts
+                                    .FirstOrDefaultAsync(c => c.UserId == result.UserID && c.VariantId == item.VariantId && c.IsActive == true);
+
+                                if (existingCart != null)
+                                {
+                                    // Cộng dồn số  số lượng
+                                    existingCart.Quantity += item.Quantity;
+                                    existingCart.UpdatedDate = DateTime.Now;
+                                    _context.Carts.Update(existingCart);
+                                }
+                                else
+                                {
+                                    // Tạo mục mới
+                                    var cartModel = new CartCreateVModel
+                                    {
+                                        UserId = result.UserID,
+                                        VariantId = item.VariantId,
+                                        Quantity = item.Quantity
+                                    };
+                                    await _cartService.Create(cartModel);
+                                }
+                            }
+                            await _context.SaveChangesAsync();
+                            HttpContext.Session.Remove("Cart"); // Xóa session
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Ghi log lỗi (nếu có hệ thống logging)
+                        // Không làm gián đoạn đăng nhập
+                        ModelState.AddModelError("", "Đã xảy ra lỗi khi đồng bộ giỏ hàng. Vui lòng kiểm tra lại.");
+                    }
                     // Điều hướng sau khi login
                     if (result.Role == "Admin")
                     {
