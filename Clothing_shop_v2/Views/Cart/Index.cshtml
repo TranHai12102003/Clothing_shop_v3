@@ -45,50 +45,40 @@
             </div>
             <div class="col-lg-6 text-center text-lg-right">
                 <div class="d-inline-flex align-items-center">
-                    <a class="text-dark px-2" href="">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a class="text-dark px-2" href="">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a class="text-dark px-2" href="">
-                        <i class="fab fa-linkedin-in"></i>
-                    </a>
-                    <a class="text-dark px-2" href="">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a class="text-dark pl-2" href="">
-                        <i class="fab fa-youtube"></i>
-                    </a>
+                    <a class="text-dark px-2" href=""><i class="fab fa-facebook-f"></i></a>
+                    <a class="text-dark px-2" href=""><i class="fab fa-twitter"></i></a>
+                    <a class="text-dark px-2" href=""><i class="fab fa-linkedin-in"></i></a>
+                    <a class="text-dark px-2" href=""><i class="fab fa-instagram"></i></a>
+                    <a class="text-dark pl-2" href=""><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
         </div>
         <div class="row align-items-center py-3 px-xl-5">
             <div class="col-lg-3 d-none d-lg-block">
-                <a href="" class="text-decoration-none">
+                <a href="/" class="text-decoration-none">
                     <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
                 </a>
             </div>
             <div class="col-lg-6 col-6 text-left">
-                <form action="">
+                <form asp-controller="Shop" asp-action="Index" method="get">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for products">
+                        <input type="text" class="form-control" name="SearchString" placeholder="Search for products" value="@ViewData["CurrentFilter"]">
                         <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
+                            <button type="submit" class="input-group-text bg-transparent text-primary">
                                 <i class="fa fa-search"></i>
-                            </span>
+                            </button>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="col-lg-3 col-6 text-right">
-                <a href="" class="btn border">
+                <a href="/Wishlist" class="btn border">
                     <i class="fas fa-heart text-primary"></i>
                     <span class="badge">0</span>
                 </a>
-                <a href="" class="btn border">
+                <a asp-controller="Cart" asp-action="Index" class="btn border">
                     <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge">0</span>
+                    <span class="badge">@ViewBag.CartCount</span>
                 </a>
             </div>
         </div>
@@ -134,8 +124,8 @@
                     </button>
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
-                            <a href="index.html" class="nav-item nav-link">Home</a>
-                            <a href="shop.html" class="nav-item nav-link">Shop</a>
+                            <a asp-controller="Home" asp-action="Index" class="nav-item nav-link">Home</a>
+                            <a asp-controller="Shop" asp-action="Index" class="nav-item nav-link">Shop</a>
                             <a href="detail.html" class="nav-item nav-link">Shop Detail</a>
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle active" data-toggle="dropdown">Pages</a>
@@ -175,7 +165,7 @@
         <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
             <h1 class="font-weight-semi-bold text-uppercase mb-3">Shopping Cart</h1>
             <div class="d-inline-flex">
-                <p class="m-0"><a href="">Home</a></p>
+                <p class="m-0"><a asp-controller="Home" asp-action="Index">Home</a></p>
                 <p class="m-0 px-2">-</p>
                 <p class="m-0">Shopping Cart</p>
             </div>
@@ -186,19 +176,27 @@
     <div class="container-fluid pt-5">
         <div class="row px-xl-5">
             <div class="col-lg-8 table-responsive mb-5">
+                <div id="cart-messages">
                 @if (TempData["SuccessMessage"] != null)
                 {
                     <div class="alert alert-success">
                         @TempData["SuccessMessage"]
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                     </div>
                 }
                 @if (TempData["ErrorMessage"] != null)
                 {
                     <div class="alert alert-danger">
                         @TempData["ErrorMessage"]
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                     </div>
                 }
-                @if (Model.Any())
+				</div>
+                @if (Model != null && Model.Any())
                 {
                     <table class="table table-bordered text-center mb-0">
                         <thead class="bg-secondary text-dark">
@@ -213,36 +211,32 @@
                         <tbody class="align-middle">
                             @foreach (var item in Model)
                             {
-                                <tr>
+                                <tr data-cart-id="@(item.Id != 0 ? item.Id : item.VariantId)">
                                     <td class="align-middle">
-                                        <img src="@item.Variant.Product.PrimaryImageUrl" alt="@item.Variant.Product.ProductName" style="width: 50px;"> (@item.Variant.Size.Name, @item.Variant.Color.Name)
+                                        <img src="@(item.Variant?.Product?.PrimaryImageUrl ?? "/img/default-product.jpg")" alt="@(item.Variant?.Product?.ProductName ?? "Unknown Product")" style="width: 50px;">
+                                        @(item.Variant?.Product?.ProductName ?? "Unknown Product") (@(item.Variant?.Size?.Name ?? "Unknown Size"), @(item.Variant?.Color?.Name ?? "Unknown Color"))
                                     </td>
-                                    <td class="align-middle">$@item.Variant.Product.Price.ToString("F2")</td>
+                                    <td class="align-middle cart-price">$@(item.Variant?.Price.ToString("F2") ?? "0.00")</td>
                                     <td class="align-middle">
-                                        <form asp-action="Update" asp-controller="Cart" method="post">
-                                            <input type="hidden" name="Id" value="@item.Id" />
-                                            <div class="input-group quantity mx-auto" style="width: 100px;">
-                                                <div class="input-group-btn">
-                                                    <button type="submit" class="btn btn-sm btn-primary btn-minus">
-                                                        <i class="fa fa-minus"></i>
-                                                    </button>
-                                                </div>
-                                                <input type="text" name="quantity" class="form-control form-control-sm bg-secondary text-center" value="@item.Quantity">
-                                                <div class="input-group-btn">
-                                                    <button type="submit" class="btn btn-sm btn-primary btn-plus">
-                                                        <i class="fa fa-plus"></i>
-                                                    </button>
-                                                </div>
+                                        <div class="input-group quantity mx-auto" style="width: 100px;">
+                                            <div class="input-group-btn">
+                                                <button type="button" class="btn btn-sm btn-primary btn-minus" data-cart-id="@(item.Id != 0 ? item.Id : item.VariantId)">
+                                                    <i class="fa fa-minus"></i>
+                                                </button>
                                             </div>
-                                            @* <button type="submit" class="btn btn-sm btn-primary mt-2">Update</button> *@
-                                        </form>
+                                            <input type="text" class="form-control form-control-sm bg-secondary text-center cart-quantity" value="@item.Quantity" data-cart-id="@(item.Id != 0 ? item.Id : item.VariantId)">
+                                            <div class="input-group-btn">
+                                                <button type="button" class="btn btn-sm btn-primary btn-plus" data-cart-id="@(item.Id != 0 ? item.Id : item.VariantId)">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </td>
-                                    <td class="align-middle">$@item.TotalPrice.ToString()</td>
+                                    <td class="align-middle cart-total">$@(item.TotalPrice.ToString("F2"))</td>
                                     <td class="align-middle">
-                                        <form asp-action="Delete" asp-controller="Cart" method="post">
-                                            <input type="hidden" name="id" value="@item.Id" />
-                                            <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button>
-                                        </form>
+                                        <button type="button" class="btn btn-sm btn-primary btn-remove" data-cart-id="@(item.Id != 0 ? item.Id : item.VariantId)">
+                                            <i class="fa fa-times"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             }
@@ -255,9 +249,9 @@
                 }
             </div>
             <div class="col-lg-4">
-                <form class="mb-5" action="">
+                <form class="mb-5" asp-action="ApplyCoupon" asp-controller="Cart" method="post">
                     <div class="input-group">
-                        <input type="text" class="form-control p-4" placeholder="Coupon Code">
+                        <input type="text" class="form-control p-4" name="couponCode" placeholder="Coupon Code">
                         <div class="input-group-append">
                             <button class="btn btn-primary">Apply Coupon</button>
                         </div>
@@ -270,19 +264,19 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-3 pt-1">
                             <h6 class="font-weight-medium">Subtotal</h6>
-                            <h6 class="font-weight-medium">$150</h6>
+                            <h6 class="font-weight-medium cart-subtotal">$@(Model != null && Model.Any() ? Model.Sum(item => item.TotalPrice).ToString("F2") : "0.00")</h6>
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">Shipping</h6>
-                            <h6 class="font-weight-medium">$10</h6>
+                            <h6 class="font-weight-medium">$10.00</h6>
                         </div>
                     </div>
                     <div class="card-footer border-secondary bg-transparent">
                         <div class="d-flex justify-content-between mt-2">
                             <h5 class="font-weight-bold">Total</h5>
-                            <h5 class="font-weight-bold">$@((Model != null && Model.Any() ? Model.Sum(item => item.TotalPrice) + 10 : 0).ToString("F2"))</h5>
+                            <h5 class="font-weight-bold cart-total-all">$@(Model != null && Model.Any() ? (Model.Sum(item => item.TotalPrice) + 10).ToString("F2") : "0.00")</h5>
                         </div>
-                        <button class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
+                        <a asp-action="Index" asp-controller="Checkout" class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</a>
                     </div>
                 </div>
             </div>
@@ -374,6 +368,123 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Tự động ẩn tất cả thông báo khi trang tải
+            function autoHideMessages() {
+                $('#cart-messages .alert').each(function () {
+                    var $alert = $(this);
+                    setTimeout(function () {
+                        $alert.alert('close');
+                    }, 3000);
+                });
+            }
+
+            // Gọi khi trang tải để xử lý thông báo TempData
+            autoHideMessages();
+
+            $('.btn-plus').click(function () {
+                var cartId = $(this).data('cart-id');
+                var quantityInput = $(this).closest('.input-group').find('.cart-quantity');
+                var currentQuantity = parseInt(quantityInput.val());
+                updateQuantity(cartId, currentQuantity + 1, quantityInput);
+            });
+
+            $('.btn-minus').click(function () {
+                var cartId = $(this).data('cart-id');
+                var quantityInput = $(this).closest('.input-group').find('.cart-quantity');
+                var currentQuantity = parseInt(quantityInput.val());
+                if (currentQuantity > 1) {
+                    updateQuantity(cartId, currentQuantity - 1, quantityInput);
+                }
+            });
+
+            $('.cart-quantity').change(function () {
+                var cartId = $(this).data('cart-id');
+                var newQuantity = parseInt($(this).val()) || 1;
+                if (newQuantity < 1) {
+                    newQuantity = 1;
+                    $(this).val(1);
+                }
+                updateQuantity(cartId, newQuantity, $(this));
+            });
+
+            $('.btn-remove').click(function () {
+                var cartId = $(this).data('cart-id');
+                deleteCartItem(cartId, $(this).closest('tr'));
+            });
+
+            function updateQuantity(cartId, quantity, quantityInput) {
+                $.ajax({
+                    url: '/Cart/Update',
+                    type: 'POST',
+                    data: { Id: cartId, quantity: quantity },
+                    success: function (response) {
+                        if (response.isSuccess) {
+                            quantityInput.val(quantity);
+                            var row = quantityInput.closest('tr');
+                            var price = parseFloat(row.find('.cart-price').text().replace('$', ''));
+                            var total = (price * quantity).toFixed(2);
+                            row.find('.cart-total').text('$' + total);
+                            updateCartSummary();
+                            $('.badge').text(response.cartCount);
+                            showMessage('success', response.message);
+                        } else {
+                            showMessage('danger', response.message);
+                            quantityInput.val(response.currentQuantity || quantityInput.val());
+                        }
+                    },
+                    error: function () {
+                        showMessage('danger', 'Đã xảy ra lỗi khi cập nhật số lượng.');
+                    }
+                });
+            }
+
+            function deleteCartItem(cartId, row) {
+                $.ajax({
+                    url: '/Cart/Delete',
+                    type: 'POST',
+                    data: { id: cartId },
+                    success: function (response) {
+                        if (response.isSuccess) {
+                            row.remove();
+                            updateCartSummary();
+                            $('.badge').text(response.cartCount);
+                            showMessage('success', response.message);
+                            if ($('tbody tr').length === 0) {
+                                $('table').replaceWith('<p class="text-center">Giỏ hàng của bạn đang trống.</p>');
+                            }
+                        } else {
+                            showMessage('danger', response.message);
+                        }
+                    },
+                    error: function () {
+                        showMessage('danger', 'Đã xảy ra lỗi khi xóa sản phẩm.');
+                    }
+                });
+            }
+
+            function updateCartSummary() {
+                var subtotal = 0;
+                $('.cart-total').each(function () {
+                    subtotal += parseFloat($(this).text().replace('$', ''));
+                });
+                $('.cart-subtotal').text('$' + subtotal.toFixed(2));
+                $('.cart-total-all').text('$' + (subtotal + 10).toFixed(2));
+            }
+
+            function showMessage(type, message) {
+                var alertClass = 'alert-' + type;
+                var alertHtml = '<div class="alert ' + alertClass + ' alert-dismissible fade show" role="alert">' +
+                    message +
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                    '<span aria-hidden="true">&times;</span>' +
+                    '</button></div>';
+                $('#cart-messages').append(alertHtml);
+                autoHideMessages(); // Gọi lại để ẩn thông báo mới
+            }
+        });
+    </script>
 </body>
 
 </html>

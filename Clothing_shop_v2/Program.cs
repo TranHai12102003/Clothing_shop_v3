@@ -30,12 +30,12 @@ builder.Services.AddSingleton(new Cloudinary(new Account(
 )));
 
 // Thêm Session
-//builder.Services.AddSession(options =>
-//{
-//    options.IdleTimeout = TimeSpan.FromMinutes(30);
-//    options.Cookie.HttpOnly = true;
-//    options.Cookie.IsEssential = true;
-//});
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 //Thêm Cookie
 builder.Services.AddAuthentication("MyCookieAuth")
@@ -85,7 +85,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-//app.UseSession();//session
+app.UseSession();//session
 
 app.UseAuthentication(); // Thêm Authentication
 app.UseAuthorization();
