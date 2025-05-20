@@ -18,11 +18,13 @@ namespace Clothing_shop_v2.Services
         private readonly ClothingShopV3Context _context;
         private readonly IConfiguration _config;
         private readonly IEmailService _emailService;
-        public UserService(ClothingShopV3Context context, IConfiguration config, IEmailService emailService)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public UserService(ClothingShopV3Context context, IConfiguration config, IEmailService emailService, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _config = config;
             _emailService = emailService;
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<RegisterReponse> RegisterUser(RegisterVModel model)
         {
@@ -70,8 +72,10 @@ namespace Clothing_shop_v2.Services
         private async Task SendActivationEmail(User user)
         {
             var activationToken = GenerateActivationToken(user);
-            var confirmationLink = $"{_config["AppSettings:BaseUrl"]}/activate?token={activationToken}";
-            var resendLink = $"{_config["AppSettings:BaseUrl"]}/resend-activation?email={user.Email}";
+            var request = _httpContextAccessor.HttpContext?.Request;
+            var baseUrl = $"{request?.Scheme}://{request?.Host}";
+            var confirmationLink = $"{baseUrl}/activate?token={activationToken}";
+            var resendLink = $"{baseUrl}/resend-activation?email={user.Email}";
             var emailBody = GenerateEmailBody(user.FullName, confirmationLink, resendLink);
 
             await _emailService.SendEmailAsync(user.Email, "Xác nhận đăng ký tài khoản", emailBody);
