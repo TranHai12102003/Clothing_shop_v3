@@ -65,7 +65,7 @@ namespace Clothing_shop_v2.Controllers
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
             var result = await _cartService.GetAll(userId) ?? new List<CartGetVModel>();
             ViewBag.CartCount = result.Count;
-            ViewBag.Category = await _context.Categories
+            ViewBag.Categories = await _context.Categories
                 //.Include(c => c.ParentCategory)
                 .Select(c => CategoryMapping.EntityToVModel(c)).ToListAsync();
             return View(result);
