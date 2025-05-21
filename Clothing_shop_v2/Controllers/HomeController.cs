@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Clothing_shop_v2.Mappings;
 using Clothing_shop_v2.Models;
@@ -7,6 +8,7 @@ using Clothing_shop_v2.Services.ISerivce;
 using Clothing_shop_v2.Utilities;
 using Clothing_shop_v2.VModels;
 using Clothing_shop_v2.VModels.Home;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -148,49 +150,27 @@ namespace Clothing_shop_v2.Controllers
                     //Đồng bộ giỏ hàng
                     try
                     {
-                        var cartSession = HttpContext.Session.GetObjectFromJson<List<CartCreateVModel>>("Cart");
-                        if (cartSession != null && cartSession.Any())
+                        var cartCookie = Request.Cookies["Cart"];
+                        if (!string.IsNullOrEmpty(cartCookie))
                         {
-                            foreach (var item in cartSession)
+                            var cart = JsonSerializer.Deserialize<List<CartCreateVModel>>(cartCookie);
+                            foreach (var item in cart)
                             {
-                                // Kiểm tra VariantId hợp lệ
-                                var variant = await _context.Variants.FindAsync(item.VariantId);
-                                if (variant == null)
+                                var cartModel = new CartCreateVModel
                                 {
-                                    continue; // Bỏ qua nếu VariantId không tồn tại
-                                }
-
-                                // Kiểm tra mục đã tồn tại trong Carts
-                                var existingCart = await _context.Carts
-                                    .FirstOrDefaultAsync(c => c.UserId == result.UserID && c.VariantId == item.VariantId && c.IsActive == true);
-
-                                if (existingCart != null)
-                                {
-                                    // Cộng dồn số  số lượng
-                                    existingCart.Quantity += item.Quantity;
-                                    existingCart.UpdatedDate = DateTime.Now;
-                                    _context.Carts.Update(existingCart);
-                                }
-                                else
-                                {
-                                    // Tạo mục mới
-                                    var cartModel = new CartCreateVModel
-                                    {
-                                        UserId = result.UserID,
-                                        VariantId = item.VariantId,
-                                        Quantity = item.Quantity
-                                    };
-                                    await _cartService.Create(cartModel);
-                                }
+                                    UserId = result.UserID,
+                                    VariantId = item.VariantId,
+                                    Quantity = item.Quantity
+                                };
+                                await _cartService.Create(cartModel);
                             }
-                            await _context.SaveChangesAsync();
-                            HttpContext.Session.Remove("Cart"); // Xóa session
+                            // Xóa cookie sau khi đồng bộ
+                            Response.Cookies.Delete("Cart");
                         }
+                        return RedirectToAction("Index", "Home");
                     }
                     catch (Exception ex)
                     {
-                        // Ghi log lỗi (nếu có hệ thống logging)
-                        // Không làm gián đoạn đăng nhập
                         ModelState.AddModelError("", "Đã xảy ra lỗi khi đồng bộ giỏ hàng. Vui lòng kiểm tra lại.");
                     }
                     // Điều hướng sau khi login

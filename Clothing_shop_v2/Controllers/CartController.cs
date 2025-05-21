@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Text.Json;
 using Clothing_shop_v2.Common.Contansts;
 using Clothing_shop_v2.Mappings;
 using Clothing_shop_v2.Models;
@@ -9,6 +10,7 @@ using Clothing_shop_v2.VModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shopapp.Mappings;
 
 namespace Clothing_shop_v2.Controllers
 {
@@ -32,12 +34,12 @@ namespace Clothing_shop_v2.Controllers
         {
             if (!User.Identity.IsAuthenticated)
             {
-                var cartSession = HttpContext.Session.GetObjectFromJson<List<CartCreateVModel>>("Cart") ?? new List<CartCreateVModel>();
+                var cartCookie = Request.Cookies["Cart"];
+                var cartSession = string.IsNullOrEmpty(cartCookie)
+                    ? new List<CartCreateVModel>()
+                    : JsonSerializer.Deserialize<List<CartCreateVModel>>(cartCookie);
 
-                // Lấy danh sách VariantId từ cartSession
                 var variantIds = cartSession.Select(c => c.VariantId).ToList();
-
-                // Truy vấn Variants từ cơ sở dữ liệu
                 var variants = await _context.Variants
                     .Where(v => variantIds.Contains(v.Id))
                     .Include(v => v.Product)
@@ -46,7 +48,6 @@ namespace Clothing_shop_v2.Controllers
                     .Include(v => v.Color)
                     .ToListAsync();
 
-                // Ánh xạ sang CartGetVModel phía client
                 var cartItems = variants.Select(v => new CartGetVModel
                 {
                     Id = 0,
@@ -64,6 +65,9 @@ namespace Clothing_shop_v2.Controllers
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
             var result = await _cartService.GetAll(userId) ?? new List<CartGetVModel>();
             ViewBag.CartCount = result.Count;
+            ViewBag.Category = await _context.Categories
+                //.Include(c => c.ParentCategory)
+                .Select(c => CategoryMapping.EntityToVModel(c)).ToListAsync();
             return View(result);
         }
         #region
@@ -129,56 +133,53 @@ namespace Clothing_shop_v2.Controllers
                 return RedirectToAction("Index", "ShopDetails", new { id = formModel.ProductId });
             }
 
-            // Kiểm tra tồn kho (tùy chọn)
-            // if (variant.Stock < formModel.Quantity)
-            // {
-            //     TempData["ErrorMessage"] = "Sản phẩm không đủ tồn kho.";
-            //     return RedirectToAction("Index", "ShopDetails", new { id = formModel.ProductId });
-            // }
-
             if (!User.Identity.IsAuthenticated)
             {
-                var cartSession = HttpContext.Session.GetObjectFromJson<List<CartCreateVModel>>("Cart") ?? new List<CartCreateVModel>();
-                var existingItem = cartSession.FirstOrDefault(c => c.VariantId == variant.Id);
+                var cartCookie = Request.Cookies["Cart"] != null
+                    ? JsonSerializer.Deserialize<List<CartCreateVModel>>(Request.Cookies["Cart"])
+                    : new List<CartCreateVModel>();
+
+                var existingItem = cartCookie.FirstOrDefault(c => c.VariantId == variant.Id);
                 if (existingItem != null)
                 {
                     existingItem.Quantity += formModel.Quantity;
                 }
                 else
                 {
-                    cartSession.Add(new CartCreateVModel
+                    cartCookie.Add(new CartCreateVModel
                     {
                         VariantId = variant.Id,
                         Quantity = formModel.Quantity
                     });
                 }
-                HttpContext.Session.SetObjectAsJson("Cart", cartSession);
+                var cookieOptions = new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddDays(7),
+                    HttpOnly = true,
+                    Secure = true
+                };
+                Response.Cookies.Append("Cart", JsonSerializer.Serialize(cartCookie), cookieOptions);
                 TempData["SuccessMessage"] = "Thêm sản phẩm vào giỏ hàng tạm thời thành công.";
+            }
+            else
+            {
+                var cartModel = new CartCreateVModel
+                {
+                    UserId = formModel.UserId,
+                    VariantId = variant.Id,
+                    Quantity = formModel.Quantity
+                };
+                var response = await _cartService.Create(cartModel);
+                if (response.IsSuccess)
+                {
+                    TempData["SuccessMessage"] = response.Message;
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = response.Message;
+                }
+            }
                 return RedirectToAction("Index", "Cart");
-            }
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
-            {
-                TempData["ErrorMessage"] = "Không thể xác định người dùng. Vui lòng đăng nhập lại.";
-                return RedirectToAction("Index", "ShopDetails", new { id = formModel.ProductId });
-            }
-
-            var cartModel = new CartCreateVModel
-            {
-                UserId = userId,
-                VariantId = variant.Id,
-                Quantity = formModel.Quantity
-            };
-
-            var response = await _cartService.Create(cartModel);
-            if (response.IsSuccess)
-            {
-                TempData["SuccessMessage"] = "Thêm sản phẩm vào giỏ hàng của bạn thành công.";
-                return RedirectToAction("Index", "Cart");
-            }
-
-            TempData["ErrorMessage"] = response.Message;
-            return RedirectToAction("Index", "ShopDetails", new { id = formModel.ProductId });
         }
         #region
         //[HttpPost]
@@ -201,23 +202,14 @@ namespace Clothing_shop_v2.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(int Id, int quantity)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Json(new { isSuccess = false, message = "Vui lòng đăng nhập để cập nhật giỏ hàng." });
+            }
+
             if (quantity < 1)
             {
                 return Json(new { isSuccess = false, message = "Số lượng không hợp lệ.", currentQuantity = 1 });
-            }
-
-            if (!User.Identity.IsAuthenticated)
-            {
-                var cartSession = HttpContext.Session.GetObjectFromJson<List<CartCreateVModel>>("Cart") ?? new List<CartCreateVModel>();
-                var item = cartSession.FirstOrDefault(c => c.VariantId == Id);
-                if (item == null)
-                {
-                    return Json(new { isSuccess = false, message = "Mục giỏ hàng không tồn tại." });
-                }
-
-                item.Quantity = quantity;
-                HttpContext.Session.SetObjectAsJson("Cart", cartSession);
-                return Json(new { isSuccess = true, message = "Cập nhật số lượng thành công.", cartCount = cartSession.Count });
             }
 
             var cartVModel = new CartUpdateVModel
@@ -306,6 +298,63 @@ namespace Clothing_shop_v2.Controllers
             var response = await _cartService.DeleteByVariantId(variantId);
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
             return Json(new { isSuccess = response.IsSuccess, message = response.Message, cartCount = await _context.Carts.CountAsync(c => c.UserId == userId && c.IsActive == true) });
+        }
+
+        [HttpPost]
+        public IActionResult UpdateCookie(int id, int quantity)
+        {
+            var cartCookie = Request.Cookies["Cart"];
+            var cart = string.IsNullOrEmpty(cartCookie)
+                ? new List<CartCreateVModel>()
+                : JsonSerializer.Deserialize<List<CartCreateVModel>>(cartCookie);
+
+            var item = cart.FirstOrDefault(c => c.VariantId == id);
+            if (item == null)
+            {
+                return Json(new { isSuccess = false, message = "Sản phẩm không tồn tại trong giỏ hàng." });
+            }
+
+            if (quantity < 1)
+            {
+                return Json(new { isSuccess = false, message = "Số lượng phải lớn hơn 0.", currentQuantity = item.Quantity });
+            }
+
+            item.Quantity = quantity;
+            var cookieOptions = new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddDays(7),
+                HttpOnly = true,
+                Secure = true
+            };
+            Response.Cookies.Append("Cart", JsonSerializer.Serialize(cart), cookieOptions);
+
+            return Json(new { isSuccess = true, message = "Cập nhật số lượng thành công.", cartCount = cart.Count });
+        }
+
+        [HttpPost]
+        public IActionResult DeleteCookie(int id)
+        {
+            var cartCookie = Request.Cookies["Cart"];
+            var cart = string.IsNullOrEmpty(cartCookie)
+                ? new List<CartCreateVModel>()
+                : JsonSerializer.Deserialize<List<CartCreateVModel>>(cartCookie);
+
+            var item = cart.FirstOrDefault(c => c.VariantId == id);
+            if (item == null)
+            {
+                return Json(new { isSuccess = false, message = "Sản phẩm không tồn tại trong giỏ hàng." });
+            }
+
+            cart.Remove(item);
+            var cookieOptions = new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddDays(7),
+                HttpOnly = true,
+                Secure = true
+            };
+            Response.Cookies.Append("Cart", JsonSerializer.Serialize(cart), cookieOptions);
+
+            return Json(new { isSuccess = true, message = "Xóa sản phẩm thành công.", cartCount = cart.Count });
         }
     }
 }
