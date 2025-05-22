@@ -283,10 +283,10 @@ public partial class ClothingShopV3Context : DbContext
             entity.Property(e => e.UpdatedBy).HasMaxLength(250);
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
 
-            entity.HasOne(d => d.Order).WithMany(p => p.Payments)
-                .HasForeignKey(d => d.OrderId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Payments_Orders");
+            //entity.HasOne(d => d.Order).WithMany(p => p.Payments)
+            //    .HasForeignKey(d => d.OrderId)
+            //    .OnDelete(DeleteBehavior.ClientSetNull)
+            //    .HasConstraintName("FK_Payments_Orders");
         });
 
         modelBuilder.Entity<Product>(entity =>
