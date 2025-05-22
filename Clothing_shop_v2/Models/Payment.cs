@@ -7,7 +7,7 @@ public partial class Payment
 {
     public int Id { get; set; }
 
-    public int OrderId { get; set; }
+    //public int OrderId { get; set; }
 
     public string PaymentGateway { get; set; } = null!;
 
@@ -31,7 +31,7 @@ public partial class Payment
 
     public bool? IsActive { get; set; }
 
-    public virtual Order Order { get; set; } = null!;
+    //public virtual Order Order { get; set; } = null!;
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }
