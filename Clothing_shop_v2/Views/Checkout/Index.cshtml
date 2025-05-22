@@ -1,7 +1,8 @@
-﻿@model List<Clothing_shop_v2.VModels.CartGetVModel>
+﻿@model Clothing_shop_v2.VModels.CheckoutVModel
 @{
     ViewData["Title"] = "Thanh toán";
     Layout = "_LayoutCheckout";
+    var cartItems = ViewBag.CartItems as List<Clothing_shop_v2.VModels.CartGetVModel>; 
 }
 <!-- Topbar Start -->
 <div class="container-fluid">
@@ -204,103 +205,96 @@
         <div class="col-lg-8">
             <div class="mb-4">
                 <h4 class="font-weight-semi-bold mb-4">Địa chỉ thanh toán</h4>
-                <div class="row">
-                    <div class="col-md-6 form-group">
-                        <label>Họ và Tên</label>
-                        <input class="form-control" type="text" name="FullName" placeholder="John" value="@(ViewBag.UserProfile?.FullName ?? "")">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>E-mail</label>
-                        <input class="form-control" type="text" name="Email" placeholder="example@email.com" value="@(ViewBag.UserProfile?.Email ?? "")">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Số điện thoại</label>
-                        <input class="form-control" type="text" name="MobileNo" placeholder="+123 456 789" value="@(ViewBag.UserProfile?.PhoneNumber ?? "")">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Địa chỉ </label>
-                        <input class="form-control" type="text" name="Address" placeholder="123 Street" value="@(ViewBag.UserProfile?.Address ?? "")">
-                    </div>
-                    @* <div class="col-md-6 form-group">
-                        <label>Quốc gia</label>
-                        <select class="custom-select" name="Country">
-                            <option value="United States" selected="@(ViewBag.UserProfile?.Country == "United States")">United States</option>
-                            <option value="Afghanistan" selected="@(ViewBag.UserProfile?.Country == "Afghanistan")">Afghanistan</option>
-                            <option value="Albania" selected="@(ViewBag.UserProfile?.Country == "Albania")">Albania</option>
-                            <option value="Algeria" selected="@(ViewBag.UserProfile?.Country == "Algeria")">Algeria</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Thành phố</label>
-                        <input class="form-control" type="text" name="City" placeholder="New York" value="@(ViewBag.UserProfile?.City ?? "")">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Bang</label>
-                        <input class="form-control" type="text" name="State" placeholder="New York" value="@(ViewBag.UserProfile?.State ?? "")">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Mã ZIP</label>
-                        <input class="form-control" type="text" name="ZipCode" placeholder="123" value="@(ViewBag.UserProfile?.ZipCode ?? "")">
-                    </div> *@
-                    <div class="col-md-12 form-group">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="newaccount">
-                            <label class="custom-control-label" for="newaccount">Tạo tài khoản</label>
+                <form asp-action="PlaceOrder" asp-controller="Checkout" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label>Họ và Tên</label>
+                            <input class="form-control" type="text" asp-for="FullName" placeholder="John Doe" value="@(ViewBag.UserProfile?.FullName ?? "")">
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>E-mail</label>
+                            <input class="form-control" type="email" asp-for="Email" placeholder="example@email.com" value="@(ViewBag.UserProfile?.Email ?? "")">
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Số điện thoại</label>
+                            <input class="form-control" type="text" asp-for="PhoneNumber" placeholder="+123 456 789" value="@(ViewBag.UserProfile?.PhoneNumber ?? "")">
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Địa chỉ</label>
+                            <input class="form-control" type="text" asp-for="Address" placeholder="123 Street" value="@(ViewBag.UserProfile?.Address ?? "")">
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" asp-for="CreateAccount" id="newaccount">
+                                <label class="custom-control-label" for="newaccount">Tạo tài khoản</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" asp-for="ShipToDifferentAddress" id="shipto" data-toggle="collapse" data-target="#shipping-address">
+                                <label class="custom-control-label" for="shipto">Gửi đến địa chỉ khác</label>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-12 form-group">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="shipto" data-toggle="collapse" data-target="#shipping-address">
-                            <label class="custom-control-label" for="shipto">Gửi đến địa chỉ khác</label>
+                    <div class="collapse mb-4" id="shipping-address">
+                        <h4 class="font-weight-semi-bold mb-4">Địa chỉ giao hàng</h4>
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Họ và Tên</label>
+                                <input class="form-control" type="text" asp-for="ShippingFullName" placeholder="John Doe" value="@(ViewBag.UserProfile?.FullName ?? "")">
+                                <span asp-validation-for="ShippingFullName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>E-mail</label>
+                                <input class="form-control" type="email" asp-for="ShippingEmail" placeholder="example@email.com" value="@(ViewBag.UserProfile?.Email ?? "")">
+                                <span asp-validation-for="ShippingEmail" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Số điện thoại</label>
+                                <input class="form-control" type="text" asp-for="ShippingPhoneNumber" placeholder="+123 456 789" value="@(ViewBag.UserProfile?.PhoneNumber ?? "")">
+                                <span asp-validation-for="ShippingPhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Địa chỉ</label>
+                                <input class="form-control" type="text" asp-for="ShippingAddress" placeholder="123 Street" value="@(ViewBag.UserProfile?.Address ?? "")">
+                                <span asp-validation-for="ShippingAddress" class="text-danger"></span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="collapse mb-4" id="shipping-address">
-                <h4 class="font-weight-semi-bold mb-4">Địa chỉ giao hàng</h4>
-                <div class="row">
-                    <div class="col-md-6 form-group">
-                        <label>Họ và Tên</label>
-                        <input class="form-control" type="text" name="FullName" placeholder="John" value="@(ViewBag.UserProfile?.FullName ?? "")">
+                    <div class="card border-secondary mb-5">
+                        <div class="card-header bg-secondary border-0">
+                            <h4 class="font-weight-semi-bold m-0">Thanh toán</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" asp-for="PaymentMethod" id="paypal" value="Paypal">
+                                    <label class="custom-control-label" for="paypal">VNPay</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" asp-for="PaymentMethod" id="directcheck" value="DirectCheck">
+                                    <label class="custom-control-label" for="directcheck">Chuyển khoản trực tiếp</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" asp-for="PaymentMethod" id="banktransfer" value="BankTransfer">
+                                    <label class="custom-control-label" for="banktransfer">Chuyển khoản ngân hàng</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-secondary bg-transparent">
+                            <button type="submit" class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3">Đặt hàng</button>
+                        </div>
                     </div>
-                    <div class="col-md-6 form-group">
-                        <label>E-mail</label>
-                        <input class="form-control" type="text" name="Email" placeholder="example@email.com" value="@(ViewBag.UserProfile?.Email ?? "")">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Số điện thoại</label>
-                        <input class="form-control" type="text" name="PhoneNumber" placeholder="+123 456 789" value="@(ViewBag.UserProfile?.PhoneNumber ?? "")">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Địa chỉ 1</label>
-                        <input class="form-control" type="text" name="Address" placeholder="123 Street" value="@(ViewBag.UserProfile?.Address ?? "")">
-                    </div>
-                    @* <div class="col-md-6 form-group">
-                        <label>Địa chỉ 2</label>
-                        <input class="form-control" type="text" name="ShippingAddressLine2" placeholder="123 Street" value="@(ViewBag.UserProfile?.AddressLine2 ?? "")">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Quốc gia</label>
-                        <select class="custom-select" name="ShippingCountry">
-                            <option value="United States" selected="@(ViewBag.UserProfile?.Country == "United States")">United States</option>
-                            <option value="Afghanistan" selected="@(ViewBag.UserProfile?.Country == "Afghanistan")">Afghanistan</option>
-                            <option value="Albania" selected="@(ViewBag.UserProfile?.Country == "Albania")">Albania</option>
-                            <option value="Algeria" selected="@(ViewBag.UserProfile?.Country == "Algeria")">Algeria</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Thành phố</label>
-                        <input class="form-control" type="text" name="ShippingCity" placeholder="New York" value="@(ViewBag.UserProfile?.City ?? "")">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Bang</label>
-                        <input class="form-control" type="text" name="ShippingState" placeholder="New York" value="@(ViewBag.UserProfile?.State ?? "")">
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label>Mã ZIP</label>
-                        <input class="form-control" type="text" name="ShippingZipCode" placeholder="123" value="@(ViewBag.UserProfile?.ZipCode ?? "")">
-                    </div> *@
-                </div>
+                </form>
             </div>
         </div>
         <div class="col-lg-4">
@@ -310,9 +304,9 @@
                 </div>
                 <div class="card-body">
                     <h5 class="font-weight-medium mb-3">Sản phẩm</h5>
-                    @if (Model != null && Model.Any())
+                    @if (cartItems != null && cartItems.Any())
                     {
-                        @foreach (var item in Model)
+                        @foreach (var item in cartItems)
                         {
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div class="d-flex align-items-center">
@@ -333,7 +327,7 @@
                     <hr class="mt-0">
                     <div class="d-flex justify-content-between mb-3 pt-1">
                         <h6 class="font-weight-medium">Tạm tính</h6>
-                        <h6 class="font-weight-medium">$@(Model != null && Model.Any() ? Model.Sum(item => item.TotalPrice).ToString("F2") : "0.00")</h6>
+                        <h6 class="font-weight-medium">$@(cartItems?.Sum(item => item.TotalPrice).ToString("F2") ?? "0.00")</h6>
                     </div>
                     <div class="d-flex justify-content-between">
                         <h6 class="font-weight-medium">Phí vận chuyển</h6>
@@ -343,44 +337,14 @@
                 <div class="card-footer border-secondary bg-transparent">
                     <div class="d-flex justify-content-between mt-2">
                         <h5 class="font-weight-bold">Tổng cộng</h5>
-                        <h5 class="font-weight-bold">$@(Model != null && Model.Any() ? (Model.Sum(item => item.TotalPrice) + 10).ToString("F2") : "0.00")</h5>
+                        <h5 class="font-weight-bold">$@(cartItems != null && cartItems.Any() ? (cartItems.Sum(item => item.TotalPrice) + 10).ToString("F2") : "10.00")</h5>
                     </div>
-                </div>
-            </div>
-            <div class="card border-secondary mb-5">
-                <div class="card-header bg-secondary border-0">
-                    <h4 class="font-weight-semi-bold m-0">Thanh toán</h4>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <div class="custom-control custom-radio">
-                            <input type="radio" class="custom-control-input" name="payment" id="paypal" value="Paypal">
-                            <label class="custom-control-label" for="paypal">VNPay</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="custom-control custom-radio">
-                            <input type="radio" class="custom-control-input" name="payment" id="directcheck" value="DirectCheck">
-                            <label class="custom-control-label" for="directcheck">Chuyển khoản trực tiếp</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="custom-control custom-radio">
-                            <input type="radio" class="custom-control-input" name="payment" id="banktransfer" value="BankTransfer">
-                            <label class="custom-control-label" for="banktransfer">Chuyển khoản ngân hàng</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer border-secondary bg-transparent">
-                    <form asp-action="PlaceOrder" asp-controller="Checkout" method="post">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3">Đặt hàng</button>
-                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<!-- Checkout End -->
 <!-- Checkout End -->
 <!-- Footer Start -->
 <div class="container-fluid bg-secondary text-dark mt-5 pt-5">
@@ -451,3 +415,17 @@
 <!-- Footer End -->
 <!-- Back to Top -->
 <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+<script>
+    $(document).ready(function () {
+        $('#shipto').change(function () {
+            var isChecked = $(this).is(':checked');
+            if (isChecked) {
+                $('#ShippingFullName').prop('required', true);
+                $('#ShippingAddress').prop('required', true);
+            } else {
+                $('#ShippingFullName').prop('required', false);
+                $('#ShippingAddress').prop('required', false);
+            }
+        });
+    });
+</script>
