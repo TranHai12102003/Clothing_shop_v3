@@ -28,6 +28,7 @@ builder.Services.AddSingleton(new Cloudinary(new Account(
     cloudinarySettings.ApiKey,
     cloudinarySettings.ApiSecret
 )));
+builder.Services.AddScoped<ImageHelper>(); // Thêm ImageHelper vào DI container
 
 // Thêm Session
 builder.Services.AddSession(options =>

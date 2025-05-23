@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Clothing_shop_v2.Common.Models;
+using Clothing_shop_v2.Helpers;
 using Clothing_shop_v2.Models;
 using Clothing_shop_v2.Services;
 using Clothing_shop_v2.Services.ISerivce;
@@ -16,11 +17,13 @@ namespace Clothing_shop_v2.Controllers
         private readonly IBannerService _bannerService;
         private readonly ClothingShopV3Context _context;
         private readonly Cloudinary _cloudinary;
-        public BannerController(IBannerService bannerService, Cloudinary cloudinary, ClothingShopV3Context context)
+        private readonly ImageHelper _imageHelper;
+        public BannerController(IBannerService bannerService, Cloudinary cloudinary, ClothingShopV3Context context, ImageHelper imageHelper)
         {
             _bannerService = bannerService;
             _cloudinary = cloudinary;
             _context = context;
+            _imageHelper = imageHelper;
         }
         public async Task<ActionResult<PaginationModel<BannerGetVModel>>> Index([FromQuery] BannerFilterParams parameters)
         {
@@ -65,47 +68,18 @@ namespace Clothing_shop_v2.Controllers
             string imageUrl = string.Empty;
             if (vmodel.ImageFile != null && vmodel.ImageFile.Length > 0)
             {
-                // Kiểm tra kích thước file
-                if (vmodel.ImageFile.Length > 5 * 1024 * 1024)
+                var (isSuccess, uploadedImageUrl, errorMessage) = await _imageHelper.UploadImageAsync(
+                    vmodel.ImageFile,
+                    folder: "ClothingShop/Banner"
+                );
+
+                if (!isSuccess)
                 {
-                    ModelState.AddModelError("ImageFile", "Ảnh vượt quá kích thước tối đa 5MB.");
-                    await LoadViewBagData();
+                    _imageHelper.AddModelError(ModelState, "ImageFile", errorMessage);
                     return View(vmodel);
                 }
 
-                // Kiểm tra định dạng file
-                string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif",".webp" };
-                string fileExtension = Path.GetExtension(vmodel.ImageFile.FileName).ToLower();
-                if (!allowedExtensions.Contains(fileExtension))
-                {
-                    ModelState.AddModelError("ImageFile", "Ảnh không hợp lệ. Chỉ cho phép ảnh thuộc: .jpg, .jpeg, .png, .gif,.webp");
-                    await LoadViewBagData();
-                    return View(vmodel);
-                }
-
-                // Upload ảnh lên Cloudinary
-                var uploadParams = new ImageUploadParams()
-                {
-                    File = new FileDescription(vmodel.ImageFile.FileName, vmodel.ImageFile.OpenReadStream()),
-                    //Transformation = new Transformation().Width(500).Height(500).Crop("fill"),
-                    Folder = "ClothingShop/Banner",
-                    UseFilename = true,
-                    UniqueFilename = false,
-                };
-                var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                if (uploadResult.Error != null)
-                {
-                    ModelState.AddModelError("ImageFile", "Đã xảy ra lỗi khi upload ảnh: " + uploadResult.Error.Message);
-                    await LoadViewBagData();
-                    return View(vmodel);
-                }
-                imageUrl = uploadResult.SecureUrl.ToString();
-            }
-            else
-            {
-                ModelState.AddModelError("ImageFile", "Vui lòng chọn một ảnh.");
-                await LoadViewBagData();
-                return View(vmodel);
+                imageUrl = uploadedImageUrl;
             }
 
             var response = await _bannerService.Create(vmodel, imageUrl);
@@ -167,56 +141,24 @@ namespace Clothing_shop_v2.Controllers
                 return NotFound();
             }
 
-            string imageUrl = existingBannerResponse.Value.ImageUrl; // Giữ URL ảnh hiện tại nếu không có ảnh mới
+            string imageUrl = existingBannerResponse.Value.ImageUrl; // Giữ lại ảnh cũ
             if (vmodel.ImageFile != null && vmodel.ImageFile.Length > 0)
             {
-                // Kiểm tra kích thước file
-                if (vmodel.ImageFile.Length > 5 * 1024 * 1024)
+                // Upload ảnh mới
+                var (isSuccess, uploadedImageUrl, errorMessage) = await _imageHelper.UploadImageAsync(
+                    vmodel.ImageFile,
+                    folder: "ClothingShop/Banner"
+                );
+
+                if (!isSuccess)
                 {
-                    ModelState.AddModelError("ImageFile", "Ảnh vượt quá kích thước tối đa 5MB.");
-                    await LoadViewBagData();
+                    _imageHelper.AddModelError(ModelState, "ImageFile", errorMessage);
                     return View(vmodel);
                 }
 
-                // Kiểm tra định dạng file
-                string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif",".webp" };
-                string fileExtension = Path.GetExtension(vmodel.ImageFile.FileName).ToLower();
-                if (!allowedExtensions.Contains(fileExtension))
-                {
-                    ModelState.AddModelError("ImageFile", "Ảnh không hợp lệ. Chỉ cho phép ảnh thuộc: .jpg, .jpeg, .png, .gif, .webp");
-                    await LoadViewBagData();
-                    return View(vmodel);
-                }
-
-                // Upload ảnh mới lên Cloudinary
-                var uploadParams = new ImageUploadParams()
-                {
-                    File = new FileDescription(vmodel.ImageFile.FileName, vmodel.ImageFile.OpenReadStream()),
-                    //Transformation = new Transformation().Width(500).Height(500).Crop("fill"),
-                    Folder = "ClothingShop/Banner",
-                    UseFilename = true,
-                    UniqueFilename = false,
-                };
-                var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                if (uploadResult.Error != null)
-                {
-                    ModelState.AddModelError("ImageFile", "Đã xảy ra lỗi khi upload ảnh: " + uploadResult.Error.Message);
-                    await LoadViewBagData();
-                    return View(vmodel);
-                }
-                imageUrl = uploadResult.SecureUrl.ToString();
-
-                // Xóa ảnh cũ trên Cloudinary nếu có
-                if (!string.IsNullOrEmpty(existingBannerResponse.Value.ImageUrl))
-                {
-                    var uri = new Uri(existingBannerResponse.Value.ImageUrl);
-                    var publicId = Path.GetFileNameWithoutExtension(uri.Segments.Last());
-                    var folder = "clothingshop/banner";
-                    var fullPublicId = $"{folder}/{publicId}";
-
-                    var deletionParams = new DeletionParams(fullPublicId);
-                    await _cloudinary.DestroyAsync(deletionParams);
-                }
+                // Xóa ảnh cũ nếu có
+                await _imageHelper.DeleteImageAsync(existingBannerResponse.Value.ImageUrl, "ClothingShop/Banner");
+                imageUrl = uploadedImageUrl;
             }
 
             // Cập nhật thông tin banner
