@@ -23,6 +23,19 @@ namespace Clothing_shop_v2.Mappings
                 UpdatedDate = order.UpdatedDate,
                 IsActive = order.IsActive
             };
+            if(order.OrderDetails != null && order.OrderDetails.Count > 0)
+            {
+                model.OrderDetailGetVModel = order.OrderDetails.Select(x => OrderDetailMapping.EntityToVModel(x)).ToList();
+            }
+            if(order.User != null)
+            {
+                model.User = new UserGetVModel
+                {
+                    FullName = order.User.FullName,
+                    Email = order.User.Email,
+                    PhoneNumber = order.User.PhoneNumber,
+                };
+            }
             return model;
         }
         public static Order VModelToEntity(OrderCreateVModel orderCreateVModel)

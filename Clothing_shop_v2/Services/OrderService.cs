@@ -80,7 +80,9 @@ namespace Clothing_shop_v2.Services
         {
             var order = await _context.Orders
                 .Include(x => x.User)
-                .Include(x => x.OrderDetails)
+                .Include(x => x.OrderDetails).ThenInclude(x => x.Variant).ThenInclude(x => x.Product).ThenInclude(x => x.ProductImages)
+                .Include(x => x.OrderDetails).ThenInclude(x => x.Variant).ThenInclude(x => x.Size)
+                .Include(x => x.OrderDetails).ThenInclude(x => x.Variant).ThenInclude(x => x.Color)
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (order == null)
             {

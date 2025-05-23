@@ -25,6 +25,8 @@ namespace Clothing_shop_v2.VModels
     }
     public class OrderGetVModel : OrderUpdateVModel
     {
+        public UserGetVModel User { get; set; } = null!;    
+        public List<OrderDetailGetVModel> OrderDetailGetVModel { get; set; }
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
         public DateTime? CreatedDate { get; set; }
