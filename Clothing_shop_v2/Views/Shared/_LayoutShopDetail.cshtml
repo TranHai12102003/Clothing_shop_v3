@@ -27,6 +27,7 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/easing/easing.min.js"></script>
+    <script src="~/lib/owlcarousel/owl.carousel.min.js"></script>
 
     <!-- Template Javascript -->
     <script src="~/js/main.js"></script>
@@ -75,13 +76,13 @@
 
             $('.btn-plus').click(function () {
                 var input = $('#quantity');
-                var value = parseInt(input.val()) + 1;
+                var value = parseInt(input.val()) ;
                 input.val(value);
                 $('#selected-quantity').val(value);
             });
             $('.btn-minus').click(function () {
                 var input = $('#quantity');
-                var value = parseInt(input.val()) - 1;
+                var value = parseInt(input.val());
                 if (value >= 1) {
                     input.val(value);
                     $('#selected-quantity').val(value);
