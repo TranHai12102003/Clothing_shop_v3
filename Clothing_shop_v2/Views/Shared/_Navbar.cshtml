@@ -15,17 +15,19 @@
                 </button>
                 <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                     <div class="navbar-nav mr-auto py-0">
-                        <a asp-controller="Home" asp-action="Index" class="nav-item nav-link active">Home</a>
-                        <a asp-controller="Shop" asp-action="Index" class="nav-item nav-link">Shop</a>
-                        <a asp-controller="Shop" asp-action="Detail" class="nav-item nav-link">Shop Detail</a>
-                        <div class="nav-item dropdown">
+                        <a asp-controller="Home" asp-action="Index" class="nav-item nav-link active">TRANG CHỦ</a>
+                        <a asp-controller="Shop" asp-action="Index" class="nav-item nav-link">SẢN PHẨM</a>
+                        @* <a asp-controller="Shop" asp-action="Detail" class="nav-item nav-link">Shop Detail</a> *@
+                        @* <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
                             <div class="dropdown-menu rounded-0 m-0">
                                 <a asp-controller="Cart" asp-action="Index" class="dropdown-item">Shopping Cart</a>
                                 <a asp-controller="Checkout" asp-action="Index" class="dropdown-item">Checkout</a>
                             </div>
-                        </div>
-                        <a asp-controller="Contact" asp-action="Index" class="nav-item nav-link">Contact</a>
+                        </div> *@
+                        <a asp-controller="Contact" asp-action="Index" class="nav-item nav-link">TIN TỨC</a>
+                        <a asp-controller="Contact" asp-action="Index" class="nav-item nav-link">MIX & MATCH</a>
+                        <a asp-controller="Contact" asp-action="Index" class="nav-item nav-link">LIÊN HỆ</a>
                     </div>
                     <div class="navbar-nav ml-auto py-0">
                         @if (User.Identity.IsAuthenticated)
@@ -35,14 +37,14 @@
                                     Hi, @User.Identity.Name
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                                    <a class="dropdown-item" asp-action="Profile" >Profile</a>
-                                    <a class="dropdown-item" asp-action="Logout" >Logout</a>
+                                    <a class="dropdown-item" asp-action="Profile" >Tài Khoản</a>
+                                    <a class="dropdown-item" asp-action="Logout" >Đăng Xuất</a>
                                 </div>
                             </li>
                         }
                         else
                         {
-                            <a asp-action="Login" class="nav-item nav-link">Login</a>
+                            <a asp-action="Login" class="nav-item nav-link">ĐĂNG NHẬP</a>
                         }
                     </div>
                 </div>
