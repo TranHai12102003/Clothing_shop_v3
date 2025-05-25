@@ -8,6 +8,7 @@ using System.Text.Json;
 using Clothing_shop_v2.Services.ISerivce;
 using Shopapp.Mappings;
 using Clothing_shop_v2.Common.Models;
+using Clothing_shop_v2.Services;
 
 namespace Clothing_shop_v2.Controllers
 {
@@ -16,11 +17,13 @@ namespace Clothing_shop_v2.Controllers
         private readonly ClothingShopV3Context _context;
         private readonly ICartService _cartService;
         private readonly IOrderService _orderService;
-        public CheckoutController(ClothingShopV3Context context, ICartService cartService, IOrderService orderService)
+        private readonly IVnPayService _vpnPayService;
+        public CheckoutController(ClothingShopV3Context context, ICartService cartService, IOrderService orderService, IVnPayService vpnPayService)
         {
             _context = context;
             _cartService = cartService;
             _orderService = orderService;
+            _vpnPayService = vpnPayService;
         }
         //public async Task<IActionResult> Index()
         //{
@@ -101,7 +104,7 @@ namespace Clothing_shop_v2.Controllers
                 ShippingFullName = userProfile != null ? $"{userProfile.FullName}" : "",
                 ShippingEmail = userProfile?.Email,
                 ShippingPhoneNumber = userProfile?.PhoneNumber,
-                ShippingAddress = userProfile?.Address
+                ShippingAddress = userProfile?.Address,
             };
 
             ViewBag.Categories = await _context.Categories
@@ -193,12 +196,79 @@ namespace Clothing_shop_v2.Controllers
             _context.OrderDetails.AddRange(orderDetails);
             await _context.SaveChangesAsync();
 
+            // Xử lý thanh toán VNPay
+            if (model.PaymentMethod == "VNPay") // Ở đây sử dụng "Paypal" để đại diện cho VNPay
+            {
+                var paymentVModel = new PaymentCreateVModel
+                {
+                    PaymentGateway = "VNPay",
+                    Amount = order.TotalAmount,
+                    PaymentStatus = "Pending",
+                    PaymentDate = DateTime.Now,
+                    PaymentMethod = "VNPay",
+                    IsActive = true
+                };
+
+                var payment = PaymentMapping.VModelToEntity(paymentVModel);
+                _context.Payments.Add(payment);
+                await _context.SaveChangesAsync();
+
+                // Cập nhật PaymentId cho Order
+                order.PaymentId = payment.Id;
+                _context.Orders.Update(order);
+                await _context.SaveChangesAsync();
+
+                // Tạo URL thanh toán VNPay
+                var paymentUrl = _vpnPayService.CreatePaymentUrl(order, HttpContext);
+                return Redirect(paymentUrl);
+            }
+
+            // Xóa giỏ hàng sau khi thanh toán
             var cartItemsToDelete = await _context.Carts.Where(c => c.UserId == userId).ToListAsync();
             _context.Carts.RemoveRange(cartItemsToDelete);
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Đặt hàng thành công!";
             //return RedirectToAction("OrderConfirmation", new { orderId });
+            return RedirectToAction("Index", "Cart");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PaymentCallback()
+        {
+            var response = _vpnPayService.PaymentExecute(Request.Query);
+
+            if (response.Success)
+            {
+                // Cập nhật trạng thái thanh toán và đơn hàng
+                var payment = await _context.Payments
+                    .FirstOrDefaultAsync(p => p.TransactionId == response.TransactionId);
+                var order = await _context.Orders
+                    .FirstOrDefaultAsync(o => o.Id == Convert.ToInt32(response.OrderId));
+
+                if (payment != null && order != null)
+                {
+                    payment.PaymentStatus = response.VnPayResponseCode == "00" ? "Completed" : "Failed";
+                    payment.TransactionId = response.TransactionId;
+                    order.Status = response.VnPayResponseCode == "00" ? "Confirmed" : "Pending";
+                    _context.Update(payment);
+                    _context.Update(order);
+                    await _context.SaveChangesAsync();
+
+                    TempData["SuccessMessage"] = response.VnPayResponseCode == "00"
+                        ? "Thanh toán thành công!"
+                        : "Thanh toán không thành công. Vui lòng thử lại.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy thông tin thanh toán hoặc đơn hàng.";
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Xác thực chữ ký không hợp lệ.";
+            }
+
             return RedirectToAction("Index", "Cart");
         }
 

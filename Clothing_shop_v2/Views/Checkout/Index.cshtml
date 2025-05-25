@@ -270,10 +270,30 @@
                         <div class="card-header bg-secondary border-0">
                             <h4 class="font-weight-semi-bold m-0">Thanh toán</h4>
                         </div>
+                        @* <div class="card-body">
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" asp-for="PaymentMethod" id="paypal" value="VNPay">
+                                    <label class="custom-control-label" for="paypal">VNPay</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" asp-for="PaymentMethod" id="directcheck" value="DirectCheck">
+                                    <label class="custom-control-label" for="directcheck">Chuyển khoản trực tiếp</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" asp-for="PaymentMethod" id="banktransfer" value="BankTransfer">
+                                    <label class="custom-control-label" for="banktransfer">Chuyển khoản ngân hàng</label>
+                                </div>
+                            </div>
+                        </div> *@
                         <div class="card-body">
                             <div class="form-group">
                                 <div class="custom-control custom-radio">
-                                    <input type="radio" class="custom-control-input" asp-for="PaymentMethod" id="paypal" value="Paypal">
+                                    <input type="radio" class="custom-control-input" asp-for="PaymentMethod" id="paypal" value="VNPay">
                                     <label class="custom-control-label" for="paypal">VNPay</label>
                                 </div>
                             </div>
