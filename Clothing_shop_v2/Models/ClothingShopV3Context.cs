@@ -233,8 +233,13 @@ public partial class ClothingShopV3Context : DbContext
             entity.Property(e => e.UpdatedBy).HasMaxLength(250);
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
 
-            entity.HasOne(d => d.Payment).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.PaymentId)
+            //entity.HasOne(d => d.Payment).WithMany(p => p.Orders)
+            //    .HasForeignKey(d => d.PaymentId)
+            //    .HasConstraintName("FK_Orders_Payments");
+            // Thêm cấu hình cho mối quan hệ Một-Một với Payment
+            entity.HasOne(d => d.Payment)
+                .WithOne() // Không cần navigation property từ Payment về Order
+                .HasForeignKey<Order>(d => d.PaymentId)
                 .HasConstraintName("FK_Orders_Payments");
 
             entity.HasOne(d => d.User).WithMany(p => p.Orders)

@@ -33,5 +33,5 @@ public partial class Payment
 
     //public virtual Order Order { get; set; } = null!;
 
-    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+    //public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }
