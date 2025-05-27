@@ -9,6 +9,7 @@ using Clothing_shop_v2.Services.ISerivce;
 using Shopapp.Mappings;
 using Clothing_shop_v2.Common.Models;
 using Clothing_shop_v2.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Clothing_shop_v2.Controllers
 {
@@ -17,13 +18,13 @@ namespace Clothing_shop_v2.Controllers
         private readonly ClothingShopV3Context _context;
         private readonly ICartService _cartService;
         private readonly IOrderService _orderService;
-        private readonly IVnPayService _vpnPayService;
+        private readonly IVnPayService _vnPayService;
         public CheckoutController(ClothingShopV3Context context, ICartService cartService, IOrderService orderService, IVnPayService vpnPayService)
         {
             _context = context;
             _cartService = cartService;
             _orderService = orderService;
-            _vpnPayService = vpnPayService;
+            _vnPayService = vpnPayService;
         }
         //public async Task<IActionResult> Index()
         //{
@@ -219,7 +220,7 @@ namespace Clothing_shop_v2.Controllers
                 await _context.SaveChangesAsync();
 
                 // Tạo URL thanh toán VNPay
-                var paymentUrl = _vpnPayService.CreatePaymentUrl(order, HttpContext);
+                var paymentUrl = _vnPayService.CreatePaymentUrl(order, HttpContext);
                 return Redirect(paymentUrl);
             }
 
@@ -236,23 +237,38 @@ namespace Clothing_shop_v2.Controllers
         [HttpGet]
         public async Task<IActionResult> PaymentCallback()
         {
-            var response = _vpnPayService.PaymentExecute(Request.Query);
+            var response = _vnPayService.PaymentExecute(Request.Query);
 
             if (response.Success)
             {
                 // Cập nhật trạng thái thanh toán và đơn hàng
-                var payment = await _context.Payments
-                    .FirstOrDefaultAsync(p => p.TransactionId == response.TransactionId);
+                //var payment = await _context.Payments
+                //    .FirstOrDefaultAsync(p => p.TransactionId == response.TransactionId);
                 var order = await _context.Orders
-                    .FirstOrDefaultAsync(o => o.Id == Convert.ToInt32(response.OrderId));
+                    .Include(c => c.Payment)
+                    .FirstOrDefaultAsync(o => o.Id == Convert.ToInt64(response.OrderId));
 
-                if (payment != null && order != null)
+                if (order.Payment != null && order != null)
                 {
-                    payment.PaymentStatus = response.VnPayResponseCode == "00" ? "Completed" : "Failed";
-                    payment.TransactionId = response.TransactionId;
+                    order.Payment.PaymentStatus = response.VnPayResponseCode == "00" ? "Completed" : "Failed";
+                    order.Payment.TransactionId = response.TransactionId;
                     order.Status = response.VnPayResponseCode == "00" ? "Confirmed" : "Pending";
-                    _context.Update(payment);
+                    _context.Update(order.Payment);
                     _context.Update(order);
+
+                    // Xóa giỏ hàng nếu thanh toán thành công
+                    if (response.VnPayResponseCode == "00")
+                    {
+                        var userId = order.UserId; // Lấy UserId từ Order
+                        var cartItems = await _context.Carts
+                            .Where(c => c.UserId == userId)
+                            .ToListAsync();
+                        if (cartItems.Any())
+                        {
+                            _context.Carts.RemoveRange(cartItems);
+                        }
+                    }
+
                     await _context.SaveChangesAsync();
 
                     TempData["SuccessMessage"] = response.VnPayResponseCode == "00"

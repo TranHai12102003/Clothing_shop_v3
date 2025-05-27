@@ -35,7 +35,8 @@ namespace Clothing_shop_v2.Services
             //pay.AddRequestData("vnp_OrderType", model.OrderType);
             pay.AddRequestData("vnp_OrderType", model.Status);
             pay.AddRequestData("vnp_ReturnUrl", urlCallBack);
-            pay.AddRequestData("vnp_TxnRef", tick);
+            //pay.AddRequestData("vnp_TxnRef", tick);
+            pay.AddRequestData("vnp_TxnRef", model.Id.ToString());
 
             var paymentUrl =
                 pay.CreateRequestUrl(_configuration["Vnpay:BaseUrl"], _configuration["Vnpay:HashSecret"]);
