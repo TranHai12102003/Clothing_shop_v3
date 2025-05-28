@@ -5,9 +5,9 @@
     ViewData["Title"] = "Hồ sơ";
     Layout = "_LayoutProfileCustomer";
 }
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <title>EShopper - Profile</title>
@@ -265,7 +265,7 @@
                                 <a class="dropdown-item" href="#">Tài khoản của tôi</a>
                                 <a class="dropdown-item" href="#">Đơn mua</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item text-danger" asp-action="Logout" >Đăng xuất</a>
+                                <a class="dropdown-item text-danger" asp-action="Logout">Đăng xuất</a>
                             </div>
                         </div>
                     </div>
@@ -324,24 +324,93 @@
                             <h5>Thông Tin Tài Khoản</h5>
                             <div class="info-item">
                                 <span>Họ và Tên:</span>
-                                <p>@(ViewBag.UserInfo?.FullName ?? "Chưa cập nhật")</p>
+                                <p id="display-fullname">@(ViewBag.UserInfo?.FullName ?? "Chưa cập nhật")</p>
+                            </div>
+                            <div class="info-item">
+                                <span>Giới Tính:</span>
+                                <p id="display-gender">@(ViewBag.UserInfo?.Gender == "Nam" ? "Nam" : ViewBag.UserInfo?.Gender == "Nữ" ? "Nữ" : "Chưa cập nhật")</p>
                             </div>
                             <div class="info-item">
                                 <span>Email:</span>
-                                <p>@(ViewBag.UserInfo?.Email ?? "Chưa cập nhật")</p>
+                                <p id="display-email">@(ViewBag.UserInfo?.Email ?? "Chưa cập nhật")</p>
                             </div>
                             <div class="info-item">
                                 <span>Số Điện Thoại:</span>
-                                <p>@(ViewBag.UserInfo?.PhoneNumber ?? "Chưa cập nhật")</p>
+                                <p id="display-phone">@(ViewBag.UserInfo?.PhoneNumber ?? "Chưa cập nhật")</p>
                             </div>
                             <div class="info-item">
                                 <span>Địa Chỉ:</span>
-                                <p>@(ViewBag.UserInfo?.Address ?? "Chưa cập nhật")</p>
+                                <p id="display-address">@(ViewBag.UserInfo?.Address ?? "Chưa cập nhật")</p>
                             </div>
                             <div class="text-right mt-4">
-                                <a href="#" class="btn btn-primary btn-sm">Chỉnh Sửa Thông Tin</a>
+                                <a href="#" class="btn btn-primary btn-sm" onclick="showEditProfile()">Chỉnh Sửa Thông Tin</a>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Edit Profile Section -->
+                <div class="card" id="edit-profile-section" style="display: none;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0">Chỉnh Sửa Thông Tin</h5>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="showSection('account')">
+                                <i class="fas fa-arrow-left"></i> Quay lại
+                            </button>
+                        </div>
+
+                        <form id="editProfileForm">
+                            @Html.AntiForgeryToken()
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="fullName">Họ và Tên <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="fullName" name="FullName" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="email">Email <span class="text-danger">*</span></label>
+                                        <input type="email" class="form-control" id="email" name="Email" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="phoneNumber">Số Điện Thoại</label>
+                                        <input type="tel" class="form-control" id="phoneNumber" name="PhoneNumber">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="address">Địa Chỉ</label>
+                                <textarea class="form-control" id="address" name="Address" rows="3"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gender">Giới Tính</label>
+                                <div class="form-check-inline ml-3">
+                                    <input class="form-check-input" type="radio" name="Gender" id="male" value="Nam">
+                                    <label class="form-check-label" for="male">Nam</label>
+                                </div>
+                                <div class="form-check-inline">
+                                    <input class="form-check-input" type="radio" name="Gender" id="female" value="Nữ">
+                                    <label class="form-check-label" for="female">Nữ</label>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="text-right">
+                                <button type="button" class="btn btn-secondary mr-2" onclick="showSection('account')">Hủy</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Lưu Thay Đổi
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
 
@@ -447,7 +516,6 @@
                         }
                         else
                         {
-                            <!-- Empty State -->
                             <div class="empty-state">
                                 <svg width="120" height="120" viewBox="0 0 120 120" fill="none" style="margin-bottom: 20px;">
                                     <rect x="20" y="30" width="80" height="60" rx="4" stroke="#e0e0e0" stroke-width="2" fill="none" />
@@ -549,71 +617,121 @@
 
     <script>
         function showSection(sectionName) {
-            // Remove active class from all nav links
             document.querySelectorAll('.profile-sidebar .nav-link').forEach(link => {
                 link.classList.remove('active');
             });
 
-            // Hide all sections
             const accountSection = document.getElementById('account-section');
-            const ordersCard = document.querySelector('.card:not([id])'); // The orders card without id
+            const editProfileSection = document.getElementById('edit-profile-section');
+            const ordersCard = document.querySelector('.card:not([id])');
+
+            if (accountSection) accountSection.style.display = 'none';
+            if (editProfileSection) editProfileSection.style.display = 'none';
+            if (ordersCard) ordersCard.style.display = 'none';
 
             if (sectionName === 'account') {
-                // Show Account Section, hide Orders
-                if (accountSection) {
-                    accountSection.style.display = 'block';
-                }
-                if (ordersCard) {
-                    ordersCard.style.display = 'none';
-                }
-                // Activate account nav link
+                if (accountSection) accountSection.style.display = 'block';
                 document.querySelector('[onclick="showSection(\'account\')"]').classList.add('active');
-
             } else if (sectionName === 'orders') {
-                // Show Orders, hide Account Section
-                if (accountSection) {
-                    accountSection.style.display = 'none';
-                }
-                if (ordersCard) {
-                    ordersCard.style.display = 'block';
-                }
-                // Activate orders nav link
+                if (ordersCard) ordersCard.style.display = 'block';
                 document.querySelector('[onclick="showSection(\'orders\')"]').classList.add('active');
-
+            } else if (sectionName === 'edit-profile') {
+                if (editProfileSection) editProfileSection.style.display = 'block';
             } else {
-                // Handle other sections (notifications, vouchers, etc.)
-                // Hide both account and orders
-                if (accountSection) {
-                    accountSection.style.display = 'none';
-                }
-                if (ordersCard) {
-                    ordersCard.style.display = 'none';
-                }
-
-                // Show the requested section if it exists
                 const requestedSection = document.getElementById(sectionName + '-section');
-                if (requestedSection) {
-                    requestedSection.style.display = 'block';
-                }
-
-                // Activate the corresponding nav link
+                if (requestedSection) requestedSection.style.display = 'block';
                 const navLink = document.querySelector(`[onclick="showSection('${sectionName}')"]`);
-                if (navLink) {
-                    navLink.classList.add('active');
-                }
+                if (navLink) navLink.classList.add('active');
             }
         }
 
-        // Initialize with orders section active
-        document.addEventListener('DOMContentLoaded', function() {
-            showSection('orders');
+        function showEditProfile() {
+            const fullNameElement = document.getElementById('display-fullname');
+            const emailElement = document.getElementById('display-email');
+            const phoneElement = document.getElementById('display-phone');
+            const addressElement = document.getElementById('display-address');
+            const genderElement = document.getElementById('display-gender');
+
+            if (fullNameElement && fullNameElement.textContent.trim() !== 'Chưa cập nhật') {
+                document.getElementById('fullName').value = fullNameElement.textContent.trim();
+            }
+            if (emailElement && emailElement.textContent.trim() !== 'Chưa cập nhật') {
+                document.getElementById('email').value = emailElement.textContent.trim();
+            }
+            if (phoneElement && phoneElement.textContent.trim() !== 'Chưa cập nhật') {
+                document.getElementById('phoneNumber').value = phoneElement.textContent.trim();
+            }
+            if (addressElement && addressElement.textContent.trim() !== 'Chưa cập nhật') {
+                document.getElementById('address').value = addressElement.textContent.trim();
+            }
+            if (genderElement && genderElement.textContent.trim()) {
+            const gender = genderElement.textContent.trim();
+            if (gender === 'Nam') {
+                document.getElementById('male').checked = true;
+            } else if (gender === 'Nữ') {
+                document.getElementById('female').checked = true;
+            }
+            } else if ('@ViewBag.UserInfo?.Gender' === 'Nam') {
+                document.getElementById('male').checked = true;
+            } else if ('@ViewBag.UserInfo?.Gender' === 'Nữ') {
+                document.getElementById('female').checked = true;
+            }
+
+            showSection('edit-profile');
+        }
+
+        function updateDisplayInfo() {
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phoneNumber').value;
+            const address = document.getElementById('address').value;
+            const gender = document.querySelector('input[name="gender"]:checked')?.value;
+
+            const fullNameDisplay = document.getElementById('display-fullname');
+            const emailDisplay = document.getElementById('display-email');
+            const phoneDisplay = document.getElementById('display-phone');
+            const addressDisplay = document.getElementById('display-address');
+            const genderDisplay = document.getElementById('display-gender');
+            const usernameDisplay = document.querySelector('.username');
+
+            if (fullName && fullNameDisplay) {
+                fullNameDisplay.textContent = fullName;
+                if (usernameDisplay) usernameDisplay.textContent = fullName;
+            }
+            if (email && emailDisplay) emailDisplay.textContent = email;
+            if (phone && phoneDisplay) phoneDisplay.textContent = phone || 'Chưa cập nhật';
+            if (address && addressDisplay) addressDisplay.textContent = address || 'Chưa cập nhật';
+            if (gender && genderDisplay) genderDisplay.textContent = gender;
+        }
+
+        $(document).ready(function () {
+            $('#editProfileForm').on('submit', function (event) {
+                event.preventDefault();
+
+                var formData = $(this).serialize();
+                $.ajax({
+                    url: '@Url.Action("UpdateUserAjax", "Home")',
+                    type: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        if (response.success) {
+                            updateDisplayInfo();
+                            showSection('account');
+                            alert(response.message);
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('Có lỗi xảy ra khi cập nhật thông tin.');
+                    }
+                });
+            });
         });
 
-        // Initialize with orders section active
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             showSection('orders');
         });
     </script>
 </body>
-
 </html>
