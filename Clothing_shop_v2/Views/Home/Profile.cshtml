@@ -1,4 +1,5 @@
-﻿@using Clothing_shop_v2.VModels
+﻿@using System.Globalization
+@using Clothing_shop_v2.VModels
 @model Clothing_shop_v2.Common.Models.PaginationModel<Clothing_shop_v2.VModels.OrderGetVModel>
 @{
     ViewData["Title"] = "Hồ sơ";
@@ -264,7 +265,7 @@
                                 <a class="dropdown-item" href="#">Tài khoản của tôi</a>
                                 <a class="dropdown-item" href="#">Đơn mua</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item text-danger" href="#">Đăng xuất</a>
+                                <a class="dropdown-item text-danger" asp-action="Logout" >Đăng xuất</a>
                             </div>
                         </div>
                     </div>
@@ -394,7 +395,7 @@
                                                         <div>
                                                             <h6 class="mb-1">@(detail.Variant?.Product?.ProductName ?? "Sản phẩm không xác định")</h6>
                                                             <small class="text-muted">Số lượng: @(detail?.Quantity ?? 0)</small>
-                                                            <p class="mb-0">Giá: @(detail?.Variant?.Price)</p>
+                                                            <p class="mb-0">Giá: @(detail?.Variant?.Price.ToString("C", CultureInfo.GetCultureInfo("vi-VN")))</p>
                                                         </div>
                                                     </div>
                                                 }
@@ -409,7 +410,7 @@
                                                     <small>Ngày đặt hàng: @(order?.OrderDate.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</small>
                                                 </div>
                                                 <div>
-                                                    <strong>Tổng tiền: @(order?.TotalAmount > 0 ? order.TotalAmount.ToString("C") : "N/A")</strong>
+                                                    <p>Tổng tiền: @(order?.TotalAmount > 0 ? order.TotalAmount.ToString("C", CultureInfo.GetCultureInfo("vi-VN")) : "N/A")</p>
                                                 </div>
                                             </div>
                                         </div>
