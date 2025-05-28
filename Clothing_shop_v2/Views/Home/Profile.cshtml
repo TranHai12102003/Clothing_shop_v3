@@ -1,506 +1,520 @@
-﻿@{
-    ViewData["Title"] = "Thông tin cá nhân";
-    Layout = "~/Views/Shared/_LayoutProfileCustomer.cshtml";
+﻿@using Clothing_shop_v2.VModels
+@model Clothing_shop_v2.Common.Models.PaginationModel<Clothing_shop_v2.VModels.OrderGetVModel>
+@{
+    ViewData["Title"] = "Hồ sơ";
+    Layout = "_LayoutProfileCustomer";
 }
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>User Profile - Tom's Furniture Style</title>
+    <meta charset="utf-8">
+    <title>EShopper - Profile</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="~/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="~/css/style.css" rel="stylesheet">
+
     <style>
-        @@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-        /* Reset */
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            background-color: #fdfcf9;
-            font-family: 'Poppins', sans-serif;
-            color: #222;
-            padding: 48px 24px;
-            min-height: 100vh;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 2.8rem;
-            font-weight: 600;
-            margin-bottom: 40px;
-            color: #222;
-            letter-spacing: 0.03em;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        /* Grid Layout */
-        .profile-grid {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 48px;
-        }
-
-        /* User info sidebar */
-        .user-info {
+        .profile-sidebar {
             background: #fff;
-            padding: 32px 28px;
-            border-radius: 20px;
-            box-shadow: 0 6px 20px rgb(0 0 0 / 0.06);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .avatar-wrapper {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            overflow: hidden;
-            box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
-            margin-bottom: 28px;
-        }
-
-        .avatar {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        form {
-            width: 100%;
-        }
-
-        label {
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #555;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1.8px solid #dbd6ce;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-family: 'Poppins', sans-serif;
-            color: #333;
-            transition: border-color 0.3s ease;
-            resize: vertical;
-        }
-
-            input[type="text"]:focus,
-            input[type="email"]:focus,
-            textarea:focus {
-                outline: none;
-                border-color: #bba68b;
+            .profile-sidebar .nav-link {
+                color: #333;
+                padding: 12px 20px;
+                border-bottom: 1px solid #eee;
+                transition: all 0.3s;
             }
 
-        textarea {
-            min-height: 80px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        button#saveProfileBtn {
-            width: 100%;
-            background-color: #bba68b;
-            color: #fff;
-            border: none;
-            padding: 14px 0;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-            button#saveProfileBtn:hover {
-                background-color: #a6997e;
-            }
-
-        /* Main profile content */
-        .profile-main {
-            display: flex;
-            flex-direction: column;
-            gap: 48px;
-        }
-
-        section {
-            background: #fff;
-            border-radius: 20px;
-            box-shadow: 0 6px 20px rgb(0 0 0 / 0.06);
-            padding: 32px 36px;
-        }
-
-            section h2 {
-                font-size: 1.9rem;
-                font-weight: 600;
-                margin-bottom: 32px;
-                color: #302b26;
-                border-bottom: 2px solid #e6dfd2;
-                padding-bottom: 8px;
-            }
-
-        /* Current Orders */
-        .orders-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .order-card {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            align-items: center;
-            padding: 20px 28px;
-            border-radius: 18px;
-            box-shadow: 0 10px 30px -6px rgb(110 98 76 / 0.15);
-            cursor: pointer;
-            background-color: #fefbf6;
-            transition: background-color 0.3s ease;
-        }
-
-            .order-card:hover {
-                background-color: #f8f5ec;
-            }
-
-        .order-info {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .order-id {
-            font-weight: 700;
-            font-size: 1.15rem;
-            color: #776946;
-        }
-
-        .order-date {
-            font-size: 0.9rem;
-            color: #9f8f71;
-        }
-
-        .order-status {
-            padding: 6px 22px;
-            border-radius: 30px;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.06em;
-            user-select: none;
-            max-width: fit-content;
-            color: #fff;
-        }
-
-        .status-pending {
-            background-color: #c5aa76;
-        }
-
-        .status-shipped {
-            background-color: #85784d;
-        }
-
-        .status-delivered {
-            background-color: #4e4a39;
-        }
-
-        .order-total {
-            font-weight: 700;
-            font-size: 1.15rem;
-            color: #5b5335;
-            justify-self: end;
-        }
-
-        /* Purchase History */
-        .history-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 12px;
-        }
-
-            .history-table thead tr {
-                background-color: #f4efe6;
-            }
-
-            .history-table thead th {
-                padding: 14px 18px;
-                font-weight: 600;
-                font-size: 0.9rem;
-                color: #665a3c;
-                letter-spacing: 0.06em;
-                text-transform: uppercase;
-            }
-
-            .history-table tbody tr {
-                background-color: #fcfaf6;
-                border-radius: 10px;
-                box-shadow: 0 5px 15px -6px rgb(110 98 76 / 0.1);
-                transition: box-shadow 0.3s ease;
-            }
-
-                .history-table tbody tr:hover {
-                    box-shadow: 0 8px 25px -3px rgb(110 98 76 / 0.3);
+                .profile-sidebar .nav-link:hover,
+                .profile-sidebar .nav-link.active {
+                    background-color: #f8f9fa;
+                    color: #007bff;
+                    border-left: 3px solid #007bff;
                 }
 
-            .history-table td {
-                padding: 16px 20px;
-                font-size: 0.95rem;
-                color: #7a6f58;
+                .profile-sidebar .nav-link i {
+                    margin-right: 10px;
+                    width: 16px;
+                }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+            .empty-state img {
+                max-width: 200px;
+                margin-bottom: 20px;
+                opacity: 0.6;
             }
-
-        /* Status badges in table */
-        .table-status {
-            border-radius: 22px;
-            padding: 5px 18px;
-            font-weight: 700;
-            color: #fff;
-            text-transform: uppercase;
-            font-size: 0.82rem;
-            letter-spacing: 0.05em;
-            display: inline-block;
-        }
-
-            .table-status.delivered {
-                background-color: #544b37;
-            }
-
-            .table-status.pending {
-                background-color: #c7a45a;
-            }
-
-            .table-status.shipped {
-                background-color: #8b7f56;
-            }
-
-        /* Favorites grid */
-        .favorites-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
-            gap: 24px;
-        }
-
-        .fav-product {
-            background: #fffbf4;
-            border-radius: 18px;
-            box-shadow: 0 8px 22px rgb(110 98 76 / 0.12);
-            cursor: pointer;
-            transition: box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-            .fav-product:hover {
-                box-shadow: 0 12px 30px rgb(110 98 76 / 0.25);
-            }
-
-        .fav-img {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-            border-bottom: 1px solid #d9cfa5;
-        }
-
-        .fav-info {
-            padding: 14px 16px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .fav-name {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #7c6f44;
-            margin-bottom: 8px;
-        }
-
-        .fav-price {
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: #af9f6f;
-        }
-
-        /* Responsive */
-        @@media (max-width: 920px) {
-            .profile-grid
-
-        {
-            grid-template-columns: 1fr;
-        }
 
         .user-info {
-            max-width: 360px;
-            margin: 0 auto 36px;
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
         }
 
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #007bff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
         }
-        @@media (max-width: 480px) {
-            .fav-img
 
-        {
-            border-radius: 0;
+        .username {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
         }
 
+        .user-status {
+            color: #666;
+            font-size: 14px;
         }
     </style>
 </head>
+
 <body>
-    <main class="container" role="main" aria-label="User profile dashboard">
-        <h1>My Profile</h1>
-        <div class="profile-grid">
-            <aside class="user-info" aria-label="User editable information">
-                <div class="avatar-wrapper">
-                    <img class="avatar" src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=160&q=80" alt="User avatar" />
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+        <div class="row bg-secondary py-2 px-xl-5">
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-dark" href="">FAQs</a>
+                    <span class="text-muted px-2">|</span>
+                    <a class="text-dark" href="">Help</a>
+                    <span class="text-muted px-2">|</span>
+                    <a class="text-dark" href="">Support</a>
                 </div>
-                <form id="profileForm" novalidate>
-                    <div class="input-group">
-                        <label for="inputName">Full Name</label>
-                        <input type="text" id="inputName" name="name" value="Sophia Wells" required />
-                    </div>
-                    <div class="input-group">
-                        <label for="inputUsername">Username</label>
-                        <input type="text" id="inputUsername" name="username" value="sophiaw" required />
-                    </div>
-                    <div class="input-group">
-                        <label for="inputEmail">Email</label>
-                        <input type="email" id="inputEmail" name="email" value="sophia.wells@example.com" required />
-                    </div>
-                    <div class="input-group">
-                        <label for="inputAddress">Address</label>
-                        <textarea id="inputAddress" name="address" rows="3" required>24 Elm Street
-Apartment 7
-Los Angeles, CA 90001
-USA</textarea>
-                    </div>
-                    <button type="submit" id="saveProfileBtn">Save Changes</button>
-                </form>
-            </aside>
-
-            <section class="profile-main">
-                <section aria-labelledby="current-orders-title">
-                    <h2 id="current-orders-title">Current Orders</h2>
-                    <div class="orders-list">
-                        <div class="order-card" tabindex="0" aria-label="Order #1088453, pending, total 129 dollars">
-                            <div class="order-info">
-                                <div class="order-id">#1088453</div>
-                                <div class="order-date">Placed: June 18, 2024</div>
-                                <div class="order-status status-pending" aria-live="polite">Pending</div>
-                            </div>
-                            <div class="order-total">$129.00</div>
-                        </div>
-                        <div class="order-card" tabindex="0" aria-label="Order #1088370, shipped, total 210 dollars">
-                            <div class="order-info">
-                                <div class="order-id">#1088370</div>
-                                <div class="order-date">Placed: June 8, 2024</div>
-                                <div class="order-status status-shipped" aria-live="polite">Shipped</div>
-                            </div>
-                            <div class="order-total">$210.00</div>
-                        </div>
-                    </div>
-                </section>
-
-                <section aria-labelledby="purchase-history-title">
-                    <h2 id="purchase-history-title">Purchase History</h2>
-                    <table class="history-table" aria-describedby="history-desc">
-                        <caption id="history-desc" class="sr-only">List of past orders</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Order ID</th>
-                                <th scope="col">Date</th>
-                                <th scope="col">Items</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>#1088202</td>
-                                <td>May 25, 2024</td>
-                                <td>3</td>
-                                <td><span class="table-status delivered">Delivered</span></td>
-                                <td>$275.50</td>
-                            </tr>
-                            <tr>
-                                <td>#1088105</td>
-                                <td>May 11, 2024</td>
-                                <td>1</td>
-                                <td><span class="table-status delivered">Delivered</span></td>
-                                <td>$89.99</td>
-                            </tr>
-                            <tr>
-                                <td>#1088033</td>
-                                <td>April 29, 2024</td>
-                                <td>2</td>
-                                <td><span class="table-status delivered">Delivered</span></td>
-                                <td>$142.00</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </section>
-
-                <section aria-label="Favorite products">
-                    <h2>Favorite Products</h2>
-                    <div class="favorites-grid">
-                        <article class="fav-product" tabindex="0" aria-label="Product: Classic Wooden Desk, price 180 dollars">
-                            <img class="fav-img" src="https://images.unsplash.com/photo-1493666438817-866a91353ca9?auto=format&fit=crop&w=400&q=80" alt="Classic Wooden Desk" />
-                            <div class="fav-info">
-                                <div class="fav-name">Classic Wooden Desk</div>
-                                <div class="fav-price">$180</div>
-                            </div>
-                        </article>
-                        <article class="fav-product" tabindex="0" aria-label="Product: Minimalist Chair, price 90 dollars">
-                            <img class="fav-img" src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=400&q=80" alt="Minimalist Chair" />
-                            <div class="fav-info">
-                                <div class="fav-name">Minimalist Chair</div>
-                                <div class="fav-price">$90</div>
-                            </div>
-                        </article>
-                        <article class="fav-product" tabindex="0" aria-label="Product: Industrial Floor Lamp, price 145 dollars">
-                            <img class="fav-img" src="https://images.unsplash.com/photo-1549187774-b4e9c7f067ff?auto=format&fit=crop&w=400&q=80" alt="Industrial Floor Lamp" />
-                            <div class="fav-info">
-                                <div class="fav-name">Industrial Floor Lamp</div>
-                                <div class="fav-price">$145</div>
-                            </div>
-                        </article>
-                        <article class="fav-product" tabindex="0" aria-label="Product: Vintage Carpet, price 70 dollars">
-                            <img class="fav-img" src="https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&w=400&q=80" alt="Vintage Carpet" />
-                            <div class="fav-info">
-                                <div class="fav-name">Vintage Carpet</div>
-                                <div class="fav-price">$70</div>
-                            </div>
-                        </article>
-                    </div>
-                </section>
-            </section>
+            </div>
+            <div class="col-lg-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a class="text-dark pl-2" href="">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
         </div>
-    </main>
+        <div class="row align-items-center py-3 px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                <a href="" class="text-decoration-none">
+                    <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
+                </a>
+            </div>
+            <div class="col-lg-6 col-6 text-left">
+                <form asp-controller="Shop" asp-action="Index" method="get">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="SearchString" placeholder="Search by name" value="@ViewData["CurrentFilter"]?.ToString()">
+                        <div class="input-group-append">
+                            <button type="submit" class="input-group-text bg-transparent text-primary">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-3 col-6 text-right">
+                <a href="" class="btn border">
+                    <i class="fas fa-heart text-primary"></i>
+                    <span class="badge">0</span>
+                </a>
+                <a href="" class="btn border">
+                    <i class="fas fa-shopping-cart text-primary"></i>
+                    <span class="badge">0</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+    <!-- Navbar Start -->
+    <div class="container-fluid">
+        <div class="row border-top px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
+                    <h6 class="m-0">DANH MỤC</h6>
+                    <i class="fa fa-angle-down text-dark"></i>
+                </a>
+                <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0 bg-light" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 1;">
+                    <div class="navbar-nav w-100 overflow-hidden" style="height: 410px">
+                        @{
+                            var parentCategories = ((List<CategoryGetVModel>)ViewBag.Categories)
+                            .Where(c => c.ParentCategoryId == null && c.IsActive == true)
+                            .ToList();
+                            foreach (var parent in parentCategories)
+                            {
+                                var childCategories = ((List<CategoryGetVModel>)ViewBag.Categories)
+                                .Where(c => c.ParentCategoryId == parent.Id && c.IsActive == true)
+                                .ToList();
+                                if (childCategories.Any())
+                                {
+                                    <div class="nav-item dropdown">
+                                        <a href="#" class="nav-link" data-toggle="dropdown">@parent.CategoryName <i class="fa fa-angle-down float-right mt-1"></i></a>
+                                        <div class="dropdown-menu position-absolute bg-secondary border-0 rounded-0 w-100 m-0">
+                                            @foreach (var child in childCategories)
+                                            {
+                                                <a asp-controller="Shop" asp-action="Index" asp-route-categoryId="@child.Id" class="dropdown-item">@child.CategoryName</a>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Shop" asp-action="Index" asp-route-categoryId="@parent.Id" class="nav-item nav-link">@parent.CategoryName</a>
+                                }
+                            }
+                        }
+                    </div>
+                </nav>
+            </div>
+            <div class="col-lg-9">
+                <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
+                    <a href="" class="text-decoration-none d-block d-lg-none">
+                        <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
+                    </a>
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                        <div class="navbar-nav mr-auto py-0">
+                            <a href="/" class="nav-item nav-link">TRANG CHỦ</a>
+                            <a href="/Shop" class="nav-item nav-link">SẢN PHẨM</a>
+                            <a href="#" class="nav-item nav-link">TIN TỨC</a>
+                            <a href="#" class="nav-item nav-link">MIX & MATCH</a>
+                            <a href="#" class="nav-item nav-link">LIÊN HỆ</a>
+                        </div>
+                        <div class="btn-group ml-2">
+                            <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">
+                                <i class="fas fa-user"></i> @User.Identity.Name
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="#">Tài khoản của tôi</a>
+                                <a class="dropdown-item" href="#">Đơn mua</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-danger" href="#">Đăng xuất</a>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+    <!-- Profile Content Start -->
+    <div class="container-fluid py-5">
+        <div class="row px-xl-5">
+            <!-- Sidebar -->
+            <div class="col-lg-3 col-md-4 mb-5">
+                <div class="profile-sidebar">
+                    <!-- User Info -->
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            H
+                        </div>
+                        <div class="username">haitrantrung</div>
+                        <div class="user-status">
+                            <i class="fas fa-edit text-muted"></i> Sửa Hồ Sơ
+                        </div>
+                    </div>
+
+                    <!-- Navigation Menu -->
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="#" onclick="showSection('notifications')">
+                            <i class="fas fa-bell"></i> Thông Báo
+                        </a>
+                        <a class="nav-link" href="#" onclick="showSection('account')">
+                            <i class="fas fa-user"></i> Tài Khoản Của Tôi
+                        </a>
+                        <a class="nav-link active" href="#" onclick="showSection('orders')">
+                            <i class="fas fa-clipboard-list"></i> Đơn Mua
+                        </a>
+                        <a class="nav-link" href="#" onclick="showSection('vouchers')">
+                            <i class="fas fa-ticket-alt"></i> Kho Voucher
+                        </a>
+                        <a class="nav-link" href="#" onclick="showSection('shopee-xu')">
+                            <i class="fas fa-coins"></i> Shopee Xu
+                        </a>
+                        <a class="nav-link" href="#" onclick="showSection('sale-event')">
+                            <i class="fas fa-percentage"></i> 6.6 Siêu Sale Giữa Năm <span class="badge badge-danger">New</span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9 col-md-8">
+                <!-- Orders Tab Navigation -->
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <ul class="nav nav-tabs card-header-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link @(string.IsNullOrEmpty(ViewBag.Status) ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "" })">Tất cả</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewBag.Status == "Pending" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Pending" })">Chờ thanh toán</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewBag.Status == "Vận chuyển" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Vận chuyển" })">Vận chuyển</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewBag.Status == "Chờ giao hàng" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Chờ giao hàng" })">Chờ giao hàng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewBag.Status == "Confirmed" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Confirmed" })">Hoàn thành</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewBag.Status == "Đã hủy" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Đã hủy" })">Đã hủy</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewBag.Status == "Trả hàng/Hoàn tiền" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Trả hàng/Hoàn tiền" })">Trả hàng/Hoàn tiền</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Orders List -->
+                    <div class="card-body">
+                        @if (Model.Records != null && Model.Records.Any())
+                        {
+                            <div class="orders-list">
+                                @foreach (var order in Model.Records)
+                                {
+                                    <div class="card mb-3">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <span>Mã đơn hàng: @(order?.Id )</span>
+                                            <span class="badge badge-primary">@(order?.Status ?? "N/A")</span>
+                                        </div>
+                                        <div class="card-body">
+                                            @if (order?.OrderDetailGetVModel != null && order.OrderDetailGetVModel.Any())
+                                            {
+                                                foreach (var detail in order.OrderDetailGetVModel)
+                                                {
+                                                    <div class="d-flex align-items-center mb-3">
+                                                        <img src="@(detail.Variant?.Product?.PrimaryImageUrl ?? "https://via.placeholder.com/60?text=No+Image")" alt="@(detail.Variant?.Product?.ProductName ?? "Sản phẩm không xác định")" class="mr-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                                        <div>
+                                                            <h6 class="mb-1">@(detail.Variant?.Product?.ProductName ?? "Sản phẩm không xác định")</h6>
+                                                            <small class="text-muted">Số lượng: @(detail?.Quantity ?? 0)</small>
+                                                            <p class="mb-0">Giá: @(detail?.Variant?.Price)</p>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="text-muted text-center">Không có chi tiết đơn hàng.</div>
+                                            }
+                                            <hr />
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <small>Ngày đặt hàng: @(order?.OrderDate.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</small>
+                                                </div>
+                                                <div>
+                                                    <strong>Tổng tiền: @(order?.TotalAmount > 0 ? order.TotalAmount.ToString("C") : "N/A")</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer text-right">
+                                            <a href="@Url.Action("OrderDetail", "Order", new { id = order?.Id })" class="btn btn-sm btn-primary">Xem chi tiết</a>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Pagination -->
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center mb-3">
+                                    <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                                        <a class="page-link" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage - 1, PageSize = Model.PageSize, Status = ViewBag.Status })" aria-label="Previous">
+                                            <span aria-hidden="true">«</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                    @for (int i = 1; i <= Math.Ceiling((double)Model.TotalRecords / Model.PageSize); i++)
+                                    {
+                                        <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                                            <a class="page-link" href="@Url.Action("Profile", new { PageNumber = i, PageSize = Model.PageSize, Status = ViewBag.Status })">@i</a>
+                                        </li>
+                                    }
+                                    <li class="page-item @(Model.CurrentPage == Math.Ceiling((double)Model.TotalRecords / Model.PageSize) ? "disabled" : "")">
+                                        <a class="page-link" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage + 1, PageSize = Model.PageSize, Status = ViewBag.Status })" aria-label="Next">
+                                            <span aria-hidden="true">»</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        }
+                        else
+                        {
+                            <!-- Empty State -->
+                            <div class="empty-state">
+                                <svg width="120" height="120" viewBox="0 0 120 120" fill="none" style="margin-bottom: 20px;">
+                                    <rect x="20" y="30" width="80" height="60" rx="4" stroke="#e0e0e0" stroke-width="2" fill="none" />
+                                    <path d="M30 45 L50 55 L90 35" stroke="#e0e0e0" stroke-width="2" fill="none" />
+                                    <circle cx="85" cy="25" r="8" stroke="#e0e0e0" stroke-width="2" fill="none" />
+                                    <path d="M81 21 L85 25 L89 21" stroke="#e0e0e0" stroke-width="2" fill="none" />
+                                </svg>
+                                <h5 class="mb-3">Chưa có đơn hàng</h5>
+                                <p class="text-muted mb-4">Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm ngay!</p>
+                                <a href="shop.html" class="btn btn-primary">Mua sắm ngay</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Profile Content End -->
+    <!-- Footer Start -->
+    <div class="container-fluid bg-secondary text-dark mt-5 pt-5">
+        <div class="row px-xl-5 pt-5">
+            <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
+                <a href="" class="text-decoration-none">
+                    <h1 class="mb-4 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border border-white px-3 mr-1">E</span>Shopper</h1>
+                </a>
+                <p>Dolore erat dolor sit lorem vero amet. Sed sit lorem magna, ipsum no sit erat lorem et magna ipsum dolore amet erat.</p>
+                <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, New York, USA</p>
+                <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>info@example.com</p>
+                <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
+            </div>
+            <div class="col-lg-8 col-md-12">
+                <div class="row">
+                    <div class="col-md-4 mb-5">
+                        <h5 class="font-weight-bold text-dark mb-4">Quick Links</h5>
+                        <div class="d-flex flex-column justify-content-start">
+                            <a class="text-dark mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                            <a class="text-dark mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
+                            <a class="text-dark mb-2" href="detail.html"><i class="fa fa-angle-right mr-2"></i>Shop Detail</a>
+                            <a class="text-dark mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
+                            <a class="text-dark mb-2" href="checkout.html"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
+                            <a class="text-dark" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-5">
+                        <h5 class="font-weight-bold text-dark mb-4">Quick Links</h5>
+                        <div class="d-flex flex-column justify-content-start">
+                            <a class="text-dark mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                            <a class="text-dark mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
+                            <a class="text-dark mb-2" href="detail.html"><i class="fa fa-angle-right mr-2"></i>Shop Detail</a>
+                            <a class="text-dark mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
+                            <a class="text-dark mb-2" href="checkout.html"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
+                            <a class="text-dark" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-5">
+                        <h5 class="font-weight-bold text-dark mb-4">Newsletter</h5>
+                        <form action="">
+                            <div class="form-group">
+                                <input type="text" class="form-control border-0 py-4" placeholder="Your Name" required="required" />
+                            </div>
+                            <div class="form-group">
+                                <input type="email" class="form-control border-0 py-4" placeholder="Your Email"
+                                       required="required" />
+                            </div>
+                            <div>
+                                <button class="btn btn-primary btn-block border-0 py-3" type="submit">Subscribe Now</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row border-top border-light mx-xl-5 py-4">
+            <div class="col-md-6 px-xl-0">
+                <p class="mb-md-0 text-center text-md-left text-dark">
+                    © <a class="text-dark font-weight-semi-bold" href="#">Your Site Name</a>. All Rights Reserved. Designed
+                    by
+                    <a class="text-dark font-weight-semi-bold" href="https://htmlcodex.com">HTML Codex</a><br>
+                    Distributed By <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+                </p>
+            </div>
+            <div class="col-md-6 px-xl-0 text-center text-md-right">
+                <img class="img-fluid" src="img/payments.png" alt="">
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/easing/easing.min.js"></script>
+    <script src="~/lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="~/js/main.js"></script>
 
     <script>
-        const profileForm = document.getElementById('profileForm');
-        profileForm.addEventListener('submit', (e) => {
-          e.preventDefault();
-          if (!profileForm.checkValidity()) {
-            alert('Please fill out all required fields correctly.');
-            return;
-          }
-          // Here you'd normally send the updated data to backend via API
-          alert('Profile updated successfully!');
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.card').forEach(card => {
+                if (card.id.includes('-section')) {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Remove active class from all nav links
+            document.querySelectorAll('.profile-sidebar .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Show selected section and activate corresponding nav link
+            if (sectionName === 'orders') {
+                document.querySelector('.card:not([id])').style.display = 'block';
+                document.querySelector('[onclick="showSection(\'orders\')"]').classList.add('active');
+            } else {
+                const section = document.getElementById(sectionName + '-section');
+                if (section) {
+                    section.style.display = 'block';
+                }
+                document.querySelector(`[onclick="showSection('${sectionName}')"]`).classList.add('active');
+            }
+        }
+
+        // Initialize with orders section active
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('orders');
         });
     </script>
 </body>
+
 </html>
