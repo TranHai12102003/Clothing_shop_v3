@@ -228,6 +228,7 @@ namespace Clothing_shop_v2.Controllers
             ViewBag.Categories = await _context.Categories
                 .Where(c => c.IsActive == true)
                 .Select(c => CategoryMapping.EntityToVModel(c)).ToListAsync();
+            ViewBag.UserInfo = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             return View(result.Value);
         }
 
