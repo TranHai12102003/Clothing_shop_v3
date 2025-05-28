@@ -381,7 +381,7 @@
                                 {
                                     <div class="card mb-3">
                                         <div class="card-header d-flex justify-content-between align-items-center">
-                                            <span>Mã đơn hàng: @(order?.Id )</span>
+                                            <span>Mã đơn hàng: @(order?.Id)</span>
                                             <span class="badge badge-primary">@(order?.Status ?? "N/A")</span>
                                         </div>
                                         <div class="card-body">
@@ -548,30 +548,65 @@
 
     <script>
         function showSection(sectionName) {
-            // Hide all sections
-            document.querySelectorAll('.card').forEach(card => {
-                if (card.id.includes('-section')) {
-                    card.style.display = 'none';
-                }
-            });
-
             // Remove active class from all nav links
             document.querySelectorAll('.profile-sidebar .nav-link').forEach(link => {
                 link.classList.remove('active');
             });
 
-            // Show selected section and activate corresponding nav link
-            if (sectionName === 'orders') {
-                document.querySelector('.card:not([id])').style.display = 'block';
-                document.querySelector('[onclick="showSection(\'orders\')"]').classList.add('active');
-            } else {
-                const section = document.getElementById(sectionName + '-section');
-                if (section) {
-                    section.style.display = 'block';
+            // Hide all sections
+            const accountSection = document.getElementById('account-section');
+            const ordersCard = document.querySelector('.card:not([id])'); // The orders card without id
+
+            if (sectionName === 'account') {
+                // Show Account Section, hide Orders
+                if (accountSection) {
+                    accountSection.style.display = 'block';
                 }
-                document.querySelector(`[onclick="showSection('${sectionName}')"]`).classList.add('active');
+                if (ordersCard) {
+                    ordersCard.style.display = 'none';
+                }
+                // Activate account nav link
+                document.querySelector('[onclick="showSection(\'account\')"]').classList.add('active');
+
+            } else if (sectionName === 'orders') {
+                // Show Orders, hide Account Section
+                if (accountSection) {
+                    accountSection.style.display = 'none';
+                }
+                if (ordersCard) {
+                    ordersCard.style.display = 'block';
+                }
+                // Activate orders nav link
+                document.querySelector('[onclick="showSection(\'orders\')"]').classList.add('active');
+
+            } else {
+                // Handle other sections (notifications, vouchers, etc.)
+                // Hide both account and orders
+                if (accountSection) {
+                    accountSection.style.display = 'none';
+                }
+                if (ordersCard) {
+                    ordersCard.style.display = 'none';
+                }
+
+                // Show the requested section if it exists
+                const requestedSection = document.getElementById(sectionName + '-section');
+                if (requestedSection) {
+                    requestedSection.style.display = 'block';
+                }
+
+                // Activate the corresponding nav link
+                const navLink = document.querySelector(`[onclick="showSection('${sectionName}')"]`);
+                if (navLink) {
+                    navLink.classList.add('active');
+                }
             }
         }
+
+        // Initialize with orders section active
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('orders');
+        });
 
         // Initialize with orders section active
         document.addEventListener('DOMContentLoaded', function() {
