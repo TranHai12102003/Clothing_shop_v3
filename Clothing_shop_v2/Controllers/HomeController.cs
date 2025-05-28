@@ -232,6 +232,52 @@ namespace Clothing_shop_v2.Controllers
             return View(result.Value);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateUser(UserUpdateVModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _userService.UpdateUser(model);
+                if (result.IsSuccess)
+                {
+                    TempData["SuccessMessage"] = result.Message;
+                    return RedirectToAction("Profile");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = result.Message;
+                    return RedirectToAction("Profile");
+                }
+            }
+
+            TempData["ErrorMessage"] = "Dữ liệu không hợp lệ.";
+            return RedirectToAction("Profile");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> UpdateUserAjax(UserUpdateVModel model)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            model.Id = userId; // Đảm bảo Id của người dùng được cập nhật
+            if (ModelState.IsValid)
+            {
+                var result = await _userService.UpdateUser(model);
+                return Json(new
+                {
+                    success = result.IsSuccess,
+                    message = result.Message
+                });
+            }
+
+            return Json(new
+            {
+                success = false,
+                message = "Dữ liệu không hợp lệ."
+            });
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

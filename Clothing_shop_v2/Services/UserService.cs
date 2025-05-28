@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Nodes;
+using Clothing_shop_v2.Common.Models;
 using Clothing_shop_v2.Mappings;
 using Clothing_shop_v2.Models;
 using Clothing_shop_v2.Response;
@@ -206,6 +207,31 @@ namespace Clothing_shop_v2.Services
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public async Task<ResponseResult> UpdateUser(UserUpdateVModel model)
+        {
+            var response = new ResponseResult();
+            try
+            {
+                var user = await _context.Users
+                    .Include(u => u.Role)
+                    .FirstOrDefaultAsync(u => u.Id == model.Id);
+                if (user == null)
+                {
+                    return new ErrorResponseResult("Người dùng không tồn tại");
+                }
+                // Cập nhật thông tin người dùng
+                var updatedUser = RegisterMapping.UpdateUser(model, user);
+                _context.Users.Update(updatedUser);
+                await _context.SaveChangesAsync();
+                response = new SuccessResponseResult(updatedUser, "Cập nhật thông tin người dùng thành công");
+                return response;
+            }
+            catch (Exception ex)
+            {
+                return new ErrorResponseResult("Lỗi cập nhật thông tin người dùng");
+            }
         }
     }
 }
