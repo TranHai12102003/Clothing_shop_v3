@@ -25,6 +25,9 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
 
+    <!-- Thêm SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Libraries Stylesheet -->
     <link href="~/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
 
@@ -665,12 +668,12 @@
                 document.getElementById('address').value = addressElement.textContent.trim();
             }
             if (genderElement && genderElement.textContent.trim()) {
-            const gender = genderElement.textContent.trim();
-            if (gender === 'Nam') {
-                document.getElementById('male').checked = true;
-            } else if (gender === 'Nữ') {
-                document.getElementById('female').checked = true;
-            }
+                const gender = genderElement.textContent.trim();
+                if (gender === 'Nam') {
+                    document.getElementById('male').checked = true;
+                } else if (gender === 'Nữ') {
+                    document.getElementById('female').checked = true;
+                }
             } else if ('@ViewBag.UserInfo?.Gender' === 'Nam') {
                 document.getElementById('male').checked = true;
             } else if ('@ViewBag.UserInfo?.Gender' === 'Nữ') {
@@ -685,7 +688,7 @@
             const email = document.getElementById('email').value;
             const phone = document.getElementById('phoneNumber').value;
             const address = document.getElementById('address').value;
-            const gender = document.querySelector('input[name="gender"]:checked')?.value;
+            const gender = document.querySelector('input[name="Gender"]:checked')?.value;
 
             const fullNameDisplay = document.getElementById('display-fullname');
             const emailDisplay = document.getElementById('display-email');
@@ -717,13 +720,31 @@
                         if (response.success) {
                             updateDisplayInfo();
                             showSection('account');
-                            alert(response.message);
+                            // Hiển thị popup thành công
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công',
+                                text: response.message,
+                                confirmButtonText: 'OK'
+                            });
                         } else {
-                            alert(response.message);
+                            // Hiển thị popup lỗi
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: response.message,
+                                confirmButtonText: 'OK'
+                            });
                         }
                     },
                     error: function () {
-                        alert('Có lỗi xảy ra khi cập nhật thông tin.');
+                        // Hiển thị popup lỗi khi AJAX thất bại
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: 'Có lỗi xảy ra khi cập nhật thông tin.',
+                            confirmButtonText: 'OK'
+                        });
                     }
                 });
             });
