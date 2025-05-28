@@ -76,6 +76,28 @@ namespace Clothing_shop_v2.Services
             };
         }
 
+        public async Task<ActionResult<PaginationModel<OrderGetVModel>>> GetAllByUser(OrderFilterParams parameters)
+        {
+            IQueryable<Order> query = _context.Orders
+                            .Include(x => x.User)
+                            .Include(x => x.OrderDetails)
+                            .Include(x => x.OrderDetails).ThenInclude(x => x.Variant).ThenInclude(x => x.Product).ThenInclude(x => x.ProductImages)
+                            .Where(BuildQueryable(parameters));
+            var orders = await query
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .Select(x => OrderMapping.EntityGetVModel(x))
+                .ToListAsync();
+            var totalRecords = await query.CountAsync();
+            return new PaginationModel<OrderGetVModel>
+            {
+                Records = orders,
+                TotalRecords = totalRecords,
+                PageSize = parameters.PageSize,
+                CurrentPage = parameters.PageNumber
+            };
+        }
+
         public async Task<ActionResult<OrderGetVModel>> GetById(int id)
         {
             var order = await _context.Orders
@@ -117,6 +139,7 @@ namespace Clothing_shop_v2.Services
         private Expression<Func<Order, bool>> BuildQueryable(OrderFilterParams fParams)
         {
             return x =>
+                (fParams.UserId == null || (x.User != null && x.User.Id != null && fParams.UserId == x.User.Id)) &&
                 (string.IsNullOrEmpty(fParams.FullName) || (x.User.FullName != null && x.User.FullName.Contains(fParams.FullName))) &&
                 (fParams.IsActive == null || x.IsActive == fParams.IsActive) &&
                 (fParams.OrderDate == null || (x.OrderDate != null && x.OrderDate == fParams.OrderDate)) &&

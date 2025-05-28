@@ -2,6 +2,8 @@
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Clothing_shop_v2.Common.Constants;
+using Clothing_shop_v2.Common.Models;
 using Clothing_shop_v2.Mappings;
 using Clothing_shop_v2.Models;
 using Clothing_shop_v2.Services.ISerivce;
@@ -13,6 +15,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shopapp.Mappings;
 
 namespace Clothing_shop_v2.Controllers
 {
@@ -23,14 +26,18 @@ namespace Clothing_shop_v2.Controllers
         private readonly IEmailService _emailService;
         private readonly IUserService _userService;
         private readonly ICartService _cartService;
+        private readonly IOrderService _orderService;
 
-        public HomeController(ILogger<HomeController> logger, ClothingShopV3Context context, IEmailService emailService,IUserService userService, ICartService cartService)
+        public HomeController(ILogger<HomeController> logger, ClothingShopV3Context context, 
+            IEmailService emailService,IUserService userService,
+            ICartService cartService, IOrderService orderService)
         {
             _logger = logger;
             _context = context;
             _emailService = emailService;
             _userService = userService;
             _cartService = cartService;
+            _orderService = orderService;
         }
 
         public IActionResult Index()
@@ -210,9 +217,18 @@ namespace Clothing_shop_v2.Controllers
             return View();
         }
 
-        public IActionResult Profile()
+        public async Task<IActionResult> Profile([FromQuery] OrderFilterParams filterParams)
         {
-            return View();
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            filterParams.UserId = userId;
+            filterParams.PageSize = 3; // Giới hạn số lượng đơn hàng hiển thị trên trang
+
+            var result = await _orderService.GetAllByUser(filterParams);
+            ViewBag.Status = filterParams.Status;
+            ViewBag.Categories = await _context.Categories
+                .Where(c => c.IsActive == true)
+                .Select(c => CategoryMapping.EntityToVModel(c)).ToListAsync();
+            return View(result.Value);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
