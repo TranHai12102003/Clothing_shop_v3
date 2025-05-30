@@ -77,6 +77,9 @@ namespace Clothing_shop_v2.Controllers
         [HttpGet]
         public IActionResult Register()
         {
+            ViewBag.Categories = _context.Categories
+            .Include(c => c.ParentCategory)
+            .Select(c => CategoryMapping.EntityToVModel(c)).ToList();
             return View(new RegisterVModel());
         }
         [HttpPost]
