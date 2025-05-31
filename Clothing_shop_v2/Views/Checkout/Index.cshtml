@@ -4,6 +4,33 @@
     Layout = "_LayoutCheckout";
     var cartItems = ViewBag.CartItems as List<Clothing_shop_v2.VModels.CartGetVModel>; 
 }
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>EShopper - Bootstrap Shop Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
 <!-- Topbar Start -->
 <div class="container-fluid">
     <div class="row bg-secondary py-2 px-xl-5">
@@ -259,10 +286,34 @@
                                 <input class="form-control" type="text" asp-for="ShippingPhoneNumber" placeholder="+123 456 789" value="@(ViewBag.UserProfile?.PhoneNumber ?? "")">
                                 <span asp-validation-for="ShippingPhoneNumber" class="text-danger"></span>
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Địa chỉ</label>
-                                <input class="form-control" type="text" asp-for="ShippingAddress" placeholder="123 Street" value="@(ViewBag.UserProfile?.Address ?? "")">
-                                <span asp-validation-for="ShippingAddress" class="text-danger"></span>
+                            <!-- Địa chỉ -->
+                            <div class="form-group col-md-6">
+                                <label class="form-label mb-2">Địa chỉ</label>
+                                <!-- Tỉnh/Thành phố -->
+                                <div class="mb-2">
+                                    <select id="province" class="form-control" required>
+                                        <option value="">Chọn Tỉnh/Thành phố</option>
+                                    </select>
+                                </div>
+                                <!-- Quận/Huyện -->
+                                <div class="mb-2">
+                                    <select id="district" class="form-control" disabled required>
+                                        <option value="">Chọn Quận/Huyện</option>
+                                    </select>
+                                </div>
+                                <!-- Phường/Xã -->
+                                <div class="mb-2">
+                                    <select id="ward" class="form-control" disabled required>
+                                        <option value="">Chọn Phường/Xã</option>
+                                    </select>
+                                </div>
+                                <!-- Địa chỉ cụ thể -->
+                                <div class="mb-2">
+                                    <input id="specificAddress" type="text" placeholder="Nhập địa chỉ cụ thể (số nhà, tên đường...)" class="form-control" />
+                                </div>
+                                <!-- Hidden field để lưu địa chỉ đầy đủ -->
+                                    <input asp-for="ShippingAddress" type="hidden" id="fullAddress" />
+                                <span asp-validation-for="ShippingAddress" class="field-validation-error"></span>
                             </div>
                         </div>
                     </div>
@@ -270,26 +321,6 @@
                         <div class="card-header bg-secondary border-0">
                             <h4 class="font-weight-semi-bold m-0">Thanh toán</h4>
                         </div>
-                        @* <div class="card-body">
-                            <div class="form-group">
-                                <div class="custom-control custom-radio">
-                                    <input type="radio" class="custom-control-input" asp-for="PaymentMethod" id="paypal" value="VNPay">
-                                    <label class="custom-control-label" for="paypal">VNPay</label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="custom-control custom-radio">
-                                    <input type="radio" class="custom-control-input" asp-for="PaymentMethod" id="directcheck" value="DirectCheck">
-                                    <label class="custom-control-label" for="directcheck">Chuyển khoản trực tiếp</label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="custom-control custom-radio">
-                                    <input type="radio" class="custom-control-input" asp-for="PaymentMethod" id="banktransfer" value="BankTransfer">
-                                    <label class="custom-control-label" for="banktransfer">Chuyển khoản ngân hàng</label>
-                                </div>
-                            </div>
-                        </div> *@
                         <div class="card-body">
                             <div class="form-group">
                                 <div class="custom-control custom-radio">
@@ -435,6 +466,18 @@
 <!-- Footer End -->
 <!-- Back to Top -->
 <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Contact Javascript File -->
+    <script src="mail/jqBootstrapValidation.min.js"></script>
+    <script src="mail/contact.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
 <script>
     $(document).ready(function () {
         $('#shipto').change(function () {
@@ -448,4 +491,144 @@
             }
         });
     });
+    $(document).ready(function () {
+            // API endpoint - Vietnam Administrative Units
+            const API_BASE = 'https://provinces.open-api.vn/api';
+
+            // Load provinces
+            loadProvinces();
+
+            function loadProvinces() {
+                $.ajax({
+                    url: `${API_BASE}/p/`,
+                    method: 'GET',
+                    success: function (data) {
+                        const provinceSelect = $('#province');
+                        provinceSelect.empty().append('<option value="">Chọn Tỉnh/Thành phố</option>');
+                        data.forEach(function (province) {
+                            provinceSelect.append(`<option value="${province.code}" data-name="${province.name}">${province.name}</option>`);
+                        });
+                    },
+                    error: function () {
+                        console.error('Không thể tải danh sách tỉnh/thành phố');
+                    }
+                });
+            }
+
+            // Load districts when province changes
+            $('#province').change(function () {
+                const provinceCode = $(this).val();
+                const districtSelect = $('#district');
+                const wardSelect = $('#ward');
+                districtSelect.empty().append('<option value="">Chọn Quận/Huyện</option>').prop('disabled', true);
+                wardSelect.empty().append('<option value="">Chọn Phường/Xã</option>').prop('disabled', true);
+                if (provinceCode) {
+                    districtSelect.addClass('loading');
+                    $.ajax({
+                        url: `${API_BASE}/p/${provinceCode}?depth=2`,
+                        method: 'GET',
+                        success: function (data) {
+                            districtSelect.removeClass('loading').prop('disabled', false);
+                            if (data.districts && data.districts.length > 0) {
+                                data.districts.forEach(function (district) {
+                                    districtSelect.append(`<option value="${district.code}" data-name="${district.name}">${district.name}</option>`);
+                                });
+                            }
+                        },
+                        error: function () {
+                            districtSelect.removeClass('loading');
+                            console.error('Không thể tải danh sách quận/huyện');
+                        }
+                    });
+                }
+                updateFullAddress();
+            });
+
+            // Load wards when district changes
+            $('#district').change(function () {
+                const districtCode = $(this).val();
+                const wardSelect = $('#ward');
+                wardSelect.empty().append('<option value="">Chọn Phường/Xã</option>').prop('disabled', true);
+                if (districtCode) {
+                    wardSelect.addClass('loading');
+                    $.ajax({
+                        url: `${API_BASE}/d/${districtCode}?depth=2`,
+                        method: 'GET',
+                        success: function (data) {
+                            wardSelect.removeClass('loading').prop('disabled', false);
+                            if (data.wards && data.wards.length > 0) {
+                                data.wards.forEach(function (ward) {
+                                    wardSelect.append(`<option value="${ward.code}" data-name="${ward.name}">${ward.name}</option>`);
+                                });
+                            }
+                        },
+                        error: function () {
+                            wardSelect.removeClass('loading');
+                            console.error('Không thể tải danh sách phường/xã');
+                        }
+                    });
+                }
+                updateFullAddress();
+            });
+
+            // Update full address on ward or specific address change
+            $('#ward, #specificAddress').on('change keyup', function () {
+                updateFullAddress();
+            });
+
+            // Function to update full address
+            function updateFullAddress() {
+                const specificAddress = $('#specificAddress').val().trim();
+                const wardName = $('#ward option:selected').data('name') || '';
+                const districtName = $('#district option:selected').data('name') || '';
+                const provinceName = $('#province option:selected').data('name') || '';
+                let fullAddress = '';
+                if (specificAddress) {
+                    fullAddress += specificAddress;
+                }
+                if (wardName) {
+                    fullAddress += (fullAddress ? ', ' : '') + wardName;
+                }
+                if (districtName) {
+                    fullAddress += (fullAddress ? ', ' : '') + districtName;
+                }
+                if (provinceName) {
+                    fullAddress += (fullAddress ? ', ' : '') + provinceName;
+                }
+                $('#fullAddress').val(fullAddress);
+            }
+
+            // Custom validation for address fields
+            $('form').submit(function (e) {
+                const province = $('#province').val();
+                const district = $('#district').val();
+                const ward = $('#ward').val();
+                if (!province || !district || !ward) {
+                    e.preventDefault();
+                    alert('Vui lòng chọn đầy đủ thông tin địa chỉ (Tỉnh/Thành phố, Quận/Huyện, Phường/Xã)');
+                    return false;
+                }
+                updateFullAddress();
+            });
+
+            // Back to top functionality
+            $(window).scroll(function () {
+                if ($(this).scrollTop() > 100) {
+                    $('.back-to-top').fadeIn('slow');
+                } else {
+                    $('.back-to-top').fadeOut('slow');
+                }
+            });
+
+            $('.back-to-top').click(function () {
+                $('html, body').animate({ scrollTop: 0 }, 1500, 'easeInOutExpo');
+                return false;
+            });
+
+            // Dropdown toggle for Bootstrap compatibility
+            $('.dropdown-toggle').dropdown();
+        });
 </script>
+</body>
+
+</html>
