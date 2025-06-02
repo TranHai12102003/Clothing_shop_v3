@@ -1,4 +1,5 @@
-﻿@model List<Clothing_shop_v2.VModels.CartGetVModel>
+﻿@using System.Globalization
+@model List<Clothing_shop_v2.VModels.CartGetVModel>
 @{
     ViewData["Title"] = "Giỏ hàng";
     Layout = "_LayoutCart";
@@ -231,7 +232,7 @@
                                         <img src="@(item.Variant?.Product?.PrimaryImageUrl ?? "/img/default-product.jpg")" alt="@(item.Variant?.Product?.ProductName ?? "Unknown Product")" style="width: 50px;">
                                         @(item.Variant?.Product?.ProductName ?? "Unknown Product") (@(item.Variant?.Size?.Name ?? "Unknown Size"), @(item.Variant?.Color?.Name ?? "Unknown Color"))
                                     </td>
-                                    <td class="align-middle cart-price">$@(item.Variant?.Price.ToString("F2") ?? "0.00")</td>
+                                    <td class="align-middle cart-price">@item.Variant?.Price.ToString("C", CultureInfo.GetCultureInfo("vi-VN"))</td>
                                     <td class="align-middle">
                                         <div class="input-group quantity mx-auto" style="width: 100px;">
                                             <div class="input-group-btn">
@@ -247,7 +248,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="align-middle cart-total">$@(item.TotalPrice.ToString("F2"))</td>
+                                    <td class="align-middle cart-total">@item.TotalPrice.ToString("C", CultureInfo.GetCultureInfo("vi-VN"))</td>
                                     <td class="align-middle">
                                         <button type="button" class="btn btn-sm btn-primary btn-remove" data-cart-id="@(item.Id != 0 ? item.Id : item.VariantId)">
                                             <i class="fa fa-times"></i>
@@ -283,17 +284,17 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-3 pt-1">
                             <h6 class="font-weight-medium">Tổng phụ</h6>
-                            <h6 class="font-weight-medium cart-subtotal">$@(Model != null && Model.Any() ? Model.Sum(item => item.TotalPrice).ToString("F2") : "0.00")</h6>
+                            <h6 class="font-weight-medium cart-subtotal">@(Model != null && Model.Any() ? Model.Sum(item => item.TotalPrice).ToString("C", CultureInfo.GetCultureInfo("vi-VN")) : "0 ₫")</h6>
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">Phí vận chuyển</h6>
-                            <h6 class="font-weight-medium">$10.00</h6>
+                            <h6 class="font-weight-medium">10.000 ₫</h6>
                         </div>
                     </div>
                     <div class="card-footer border-secondary bg-transparent">
                         <div class="d-flex justify-content-between mt-2">
                             <h5 class="font-weight-bold">Tổng tiền</h5>
-                            <h5 class="font-weight-bold cart-total-all">$@(Model != null && Model.Any() ? (Model.Sum(item => item.TotalPrice) + 10).ToString("F2") : "0.00")</h5>
+                            <h5 class="font-weight-bold cart-total-all">@(Model != null && Model.Any() ? Model.Sum(item => item.TotalPrice + 10000).ToString("C", CultureInfo.GetCultureInfo("vi-VN")) : "0 ₫")</h5>
                         </div>
                         <a asp-action="Index" asp-controller="Checkout" class="btn btn-block btn-primary my-3 py-3">THANH TOÁN</a>
                     </div>
