@@ -136,11 +136,35 @@ namespace Clothing_shop_v2.Services
             }
         }
 
+        public async Task<ResponseResult> UpdateStatus(int id, string status)
+        {
+            var response = new ResponseResult();
+            try
+            {
+                var order = await _context.Orders.FirstOrDefaultAsync(x => x.Id == id);
+                if (order == null)
+                {
+                    return new ErrorResponseResult("Không tìm thấy đơn hàng");
+                }
+                order.Status = status;
+                _context.Orders.Update(order);
+                await _context.SaveChangesAsync();
+                response = new SuccessResponseResult(order, "Cập nhật trạng thái đơn hàng thành công");
+                return response;
+            }
+            catch (Exception ex)
+            {
+                return new ErrorResponseResult(ex.Message);
+            }
+        }
+
         private Expression<Func<Order, bool>> BuildQueryable(OrderFilterParams fParams)
         {
             return x =>
                 (fParams.UserId == null || (x.User != null && x.User.Id != null && fParams.UserId == x.User.Id)) &&
                 (string.IsNullOrEmpty(fParams.FullName) || (x.User.FullName != null && x.User.FullName.Contains(fParams.FullName))) &&
+                (string.IsNullOrEmpty(fParams.Email) || (x.User.Email != null && x.User.Email.Contains(fParams.Email))) &&
+                (string.IsNullOrEmpty(fParams.PhoneNumber) || (x.User.PhoneNumber != null && x.User.PhoneNumber.Contains(fParams.PhoneNumber))) &&
                 (fParams.IsActive == null || x.IsActive == fParams.IsActive) &&
                 (fParams.OrderDate == null || (x.OrderDate != null && x.OrderDate == fParams.OrderDate)) &&
                 (fParams.Status == null || (x.Status != null && x.Status.Contains(fParams.Status)));

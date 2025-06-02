@@ -34,5 +34,15 @@ namespace Clothing_shop_v2.Controllers
             }
             return View(response.Value);
         }
+        [HttpPost]
+        public async Task<IActionResult> UpdateStatus(int id, string status)
+        {
+            var response = await _orderService.UpdateStatus(id, status);
+            if (response.IsSuccess)
+            {
+                return RedirectToAction("Index");
+            }
+            return BadRequest(response.Message);
+        }
     }
 }

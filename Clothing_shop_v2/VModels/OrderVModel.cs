@@ -37,6 +37,8 @@ namespace Clothing_shop_v2.VModels
         //public string? SearchString { get; set; }
         public int? UserId { get; set; }
         public string? FullName { get; set; }
+        public string? Email { get; set; }
+        public string? PhoneNumber { get; set; }
         public DateTime? OrderDate { get; set; }
         public string? Status { get; set; }
         public bool? IsActive { get; set; }

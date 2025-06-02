@@ -12,5 +12,6 @@ namespace Clothing_shop_v2.Services.ISerivce
         public Task<ResponseResult> Create(OrderCreateVModel vModel);
         public Task<ResponseResult> Update(OrderUpdateVModel vModel);
         public Task<ResponseResult> Delete(int id);
+        public Task<ResponseResult> UpdateStatus(int id, string status);
     }
 }
