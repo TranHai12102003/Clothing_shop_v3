@@ -1,4 +1,5 @@
-﻿@model List<Clothing_shop_v2.VModels.ProductGetVModel>
+﻿@using System.Globalization
+@model List<Clothing_shop_v2.VModels.ProductGetVModel>
 <!-- Products Start -->
 <div class="container-fluid pt-5">
     <div class="text-center mb-4">
@@ -14,7 +15,7 @@
                     <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                         <h6 class="text-truncate mb-3">@product.ProductName</h6>
                         <div class="d-flex justify-content-center">
-                            <h6>Giá chỉ từ: @String.Format("{0:#,##0}đ", product.Price)</h6>
+                            <h6>Giá chỉ từ: @product.Price.ToString("C", CultureInfo.GetCultureInfo("vi-VN"))</h6>
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-center bg-light border">

@@ -1,4 +1,5 @@
-﻿@using System.Text.Json
+﻿@using System.Globalization
+@using System.Text.Json
 @using Clothing_shop_v2.VModels
 @using System.Security.Claims
 @model Clothing_shop_v2.VModels.ProductDetailVModel
@@ -212,7 +213,7 @@
                     </div>
                     <small class="pt-1">(50 Reviews)</small>
                 </div>
-                <h3 class="font-weight-semi-bold mb-4">$@Model.Price.ToString("F2")</h3>
+            <h3 class="font-weight-semi-bold mb-4">@Model.Price.ToString("C", CultureInfo.GetCultureInfo("vi-VN"))</h3>
             <p class="mb-4">@Html.Raw(Model.Description)</p>
                 <div class="d-flex mb-3">
                     <p class="text-dark font-weight-medium mb-0 mr-3">Sizes:</p>
