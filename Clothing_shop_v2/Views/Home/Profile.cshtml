@@ -446,19 +446,19 @@
                                 <a class="nav-link @(string.IsNullOrEmpty(ViewBag.Status) ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "" })">Tất cả</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link @(ViewBag.Status == "Pending" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Pending" })">Chờ thanh toán</a>
+                                <a class="nav-link @(ViewBag.Status == "Pending" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Pending" })">Chờ xác nhận</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link @(ViewBag.Status == "Vận chuyển" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Vận chuyển" })">Vận chuyển</a>
+                                <a class="nav-link @(ViewBag.Status == "Shipping" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Shipping" })">Vận chuyển</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link @(ViewBag.Status == "Chờ giao hàng" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Chờ giao hàng" })">Chờ giao hàng</a>
+                                <a class="nav-link @(ViewBag.Status == "Processing" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Processing" })">Chờ giao hàng</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link @(ViewBag.Status == "Confirmed" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Confirmed" })">Hoàn thành</a>
+                                <a class="nav-link @(ViewBag.Status == "Delivered" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Delivered" })">Hoàn thành</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link @(ViewBag.Status == "Đã hủy" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Đã hủy" })">Đã hủy</a>
+                                <a class="nav-link @(ViewBag.Status == "Cancelled" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Cancelled" })">Đã hủy</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link @(ViewBag.Status == "Trả hàng/Hoàn tiền" ? "active text-danger" : "text-dark")" href="@Url.Action("Profile", new { PageNumber = Model.CurrentPage, PageSize = Model.PageSize, Status = "Trả hàng/Hoàn tiền" })">Trả hàng/Hoàn tiền</a>

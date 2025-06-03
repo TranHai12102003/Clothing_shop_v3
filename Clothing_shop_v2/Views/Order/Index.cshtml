@@ -198,7 +198,7 @@
                                     <input type="hidden" name="id" value="@order.Id" />
                                     <select name="status" class="form-select status-select" data-order-id="@order.Id" onchange="updateOrderStatus(this)">
                                         @{
-                                            var statusOptions = new[] { "Pending", "Confirmed", "Processing", "Shipping", "Delivered" };
+                                            var statusOptions = new[] { "Pending", "Confirmed", "Processing", "Shipping", "Delivered", "Cancelled" };
                                         }
                                         @foreach (var status in statusOptions)
                                         {
