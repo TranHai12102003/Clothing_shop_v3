@@ -4,7 +4,7 @@ namespace Clothing_shop_v2.VModels
 {
     public class OrderCreateVModel
     {
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
 
         public DateTime OrderDate { get; set; }
 

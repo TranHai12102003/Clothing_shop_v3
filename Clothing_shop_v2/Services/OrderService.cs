@@ -60,7 +60,8 @@ namespace Clothing_shop_v2.Services
             IQueryable<Order> query = _context.Orders
                 .Include(x => x.User)
                 .Include(x => x.OrderDetails)
-                .Where(BuildQueryable(parameters));
+                .Where(BuildQueryable(parameters))
+                .OrderByDescending(x => x.OrderDate);
             var orders = await query
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
