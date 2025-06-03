@@ -32,15 +32,15 @@
         </div>
         <div class="field">
             <label for="customer-name">Tên khách hàng</label>
-            <div id="customer-name" class="value">@(Model.User.FullName ?? "Không xác định")</div>
+            <div id="customer-name" class="value">@(Model.User?.FullName ?? "Không xác định")</div>
         </div>
         <div class="field">
             <label for="phone-number">Số điện thoại</label>
-            <div id="phone-number" class="value">@(Model.User.PhoneNumber ?? "Không xác định")</div>
+            <div id="phone-number" class="value">@(Model.User?.PhoneNumber ?? "Không xác định")</div>
         </div>
         <div class="field">
             <label for="email">Email</label>
-            <div id="email" class="value">@(Model.User.Email ?? "Không xác định")</div>
+            <div id="email" class="value">@(Model.User?.Email ?? "Không xác định")</div>
         </div>
         <div class="field">
             <label for="order-date">Ngày đặt hàng</label>
