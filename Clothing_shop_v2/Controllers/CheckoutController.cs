@@ -223,6 +223,25 @@ namespace Clothing_shop_v2.Controllers
                 var paymentUrl = _vnPayService.CreatePaymentUrl(order, HttpContext);
                 return Redirect(paymentUrl);
             }
+            if(model.PaymentMethod == "COD")
+            {
+                var payment = new Payment
+                {
+                    PaymentGateway = "COD",
+                    Amount = order.TotalAmount,
+                    PaymentMethod = "COD",
+                    PaymentStatus = "UnPaid",
+                    PaymentDate = DateTime.Now,
+                    IsActive = true
+                };
+                _context.Payments.Add(payment);
+                await _context.SaveChangesAsync();
+                // Cập nhật PaymentId cho Order
+                order.PaymentId = payment.Id;
+                order.Status = "Pending"; // Trạng thái đơn hàng khi thanh toán COD
+                _context.Orders.Update(order);
+                await _context.SaveChangesAsync();
+            }
 
             // Xóa giỏ hàng sau khi thanh toán
             var cartItemsToDelete = await _context.Carts.Where(c => c.UserId == userId).ToListAsync();

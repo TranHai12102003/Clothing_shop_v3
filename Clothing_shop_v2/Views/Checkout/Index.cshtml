@@ -25,6 +25,9 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Libraries Stylesheet -->
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
 
@@ -292,19 +295,19 @@
                                 <label class="form-label mb-2">Địa chỉ</label>
                                 <!-- Tỉnh/Thành phố -->
                                 <div class="mb-2">
-                                    <select id="province" class="form-control" required>
+                                    <select id="province" class="form-control">
                                         <option value="">Chọn Tỉnh/Thành phố</option>
                                     </select>
                                 </div>
                                 <!-- Quận/Huyện -->
                                 <div class="mb-2">
-                                    <select id="district" class="form-control" disabled required>
+                                    <select id="district" class="form-control" disabled>
                                         <option value="">Chọn Quận/Huyện</option>
                                     </select>
                                 </div>
                                 <!-- Phường/Xã -->
                                 <div class="mb-2">
-                                    <select id="ward" class="form-control" disabled required>
+                                    <select id="ward" class="form-control" disabled>
                                         <option value="">Chọn Phường/Xã</option>
                                     </select>
                                 </div>
@@ -329,6 +332,12 @@
                                     <label class="custom-control-label" for="paypal">VNPay</label>
                                 </div>
                             </div>
+                                <div class="form-group">
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" class="custom-control-input" asp-for="PaymentMethod" id="cod" value="COD">
+                                        <label class="custom-control-label" for="cod">Thanh toán khi nhận hàng</label>
+                                    </div>
+                                </div>
                             <div class="form-group">
                                 <div class="custom-control custom-radio">
                                     <input type="radio" class="custom-control-input" asp-for="PaymentMethod" id="directcheck" value="DirectCheck">
@@ -479,20 +488,53 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
-<script>
-    $(document).ready(function () {
-        $('#shipto').change(function () {
-            var isChecked = $(this).is(':checked');
-            if (isChecked) {
-                $('#ShippingFullName').prop('required', true);
-                $('#ShippingAddress').prop('required', true);
-            } else {
+    <script>
+        $(document).ready(function () {
+            // Xử lý khi checkbox "Gửi đến địa chỉ khác" thay đổi
+            $('#shipto').change(function () {
+                var isChecked = $(this).is(':checked');
+
+                if (isChecked) {
+                    // Bật required cho các trường shipping
+                    $('#ShippingFullName').prop('required', true);
+                    $('#ShippingEmail').prop('required', true);
+                    $('#ShippingPhoneNumber').prop('required', true);
+                    $('#ShippingAddress').prop('required', true);
+
+                    // Bật required cho các select địa chỉ
+                    $('.shipping-required').prop('required', true);
+
+                    // Enable các select
+                    $('#province').prop('disabled', false);
+                } else {
+                    // Tắt required cho các trường shipping
+                    $('#ShippingFullName').prop('required', false);
+                    $('#ShippingEmail').prop('required', false);
+                    $('#ShippingPhoneNumber').prop('required', false);
+                    $('#ShippingAddress').prop('required', false);
+
+                    // Tắt required cho các select địa chỉ
+                    $('.shipping-required').prop('required', false);
+
+                    // Reset và disable các select
+                    $('#province').val('').prop('disabled', true);
+                    $('#district').val('').prop('disabled', true);
+                    $('#ward').val('').prop('disabled', true);
+                    $('#specificAddress').val('');
+                    $('#fullAddress').val('');
+                }
+            });
+
+            // Khởi tạo trạng thái ban đầu
+            if (!$('#shipto').is(':checked')) {
                 $('#ShippingFullName').prop('required', false);
+                $('#ShippingEmail').prop('required', false);
+                $('#ShippingPhoneNumber').prop('required', false);
                 $('#ShippingAddress').prop('required', false);
+                $('.shipping-required').prop('required', false);
+                $('#province').prop('disabled', true);
             }
-        });
-    });
-    $(document).ready(function () {
+
             // API endpoint - Vietnam Administrative Units
             const API_BASE = 'https://provinces.open-api.vn/api';
 
@@ -511,6 +553,14 @@
                         });
                     },
                     error: function () {
+                        // Sử dụng SweetAlert2 cho thông báo lỗi
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi tải dữ liệu',
+                            text: 'Không thể tải danh sách tỉnh/thành phố. Vui lòng thử lại sau.',
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'Đóng'
+                        });
                         console.error('Không thể tải danh sách tỉnh/thành phố');
                     }
                 });
@@ -521,8 +571,10 @@
                 const provinceCode = $(this).val();
                 const districtSelect = $('#district');
                 const wardSelect = $('#ward');
+
                 districtSelect.empty().append('<option value="">Chọn Quận/Huyện</option>').prop('disabled', true);
                 wardSelect.empty().append('<option value="">Chọn Phường/Xã</option>').prop('disabled', true);
+
                 if (provinceCode) {
                     districtSelect.addClass('loading');
                     $.ajax({
@@ -538,6 +590,14 @@
                         },
                         error: function () {
                             districtSelect.removeClass('loading');
+                            // Sử dụng SweetAlert2 cho thông báo lỗi
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi tải dữ liệu',
+                                text: 'Không thể tải danh sách quận/huyện. Vui lòng thử lại.',
+                                confirmButtonColor: '#d33',
+                                confirmButtonText: 'Thử lại'
+                            });
                             console.error('Không thể tải danh sách quận/huyện');
                         }
                     });
@@ -549,7 +609,9 @@
             $('#district').change(function () {
                 const districtCode = $(this).val();
                 const wardSelect = $('#ward');
+
                 wardSelect.empty().append('<option value="">Chọn Phường/Xã</option>').prop('disabled', true);
+
                 if (districtCode) {
                     wardSelect.addClass('loading');
                     $.ajax({
@@ -565,6 +627,14 @@
                         },
                         error: function () {
                             wardSelect.removeClass('loading');
+                            // Sử dụng SweetAlert2 cho thông báo lỗi
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi tải dữ liệu',
+                                text: 'Không thể tải danh sách phường/xã. Vui lòng thử lại.',
+                                confirmButtonColor: '#d33',
+                                confirmButtonText: 'Thử lại'
+                            });
                             console.error('Không thể tải danh sách phường/xã');
                         }
                     });
@@ -583,6 +653,7 @@
                 const wardName = $('#ward option:selected').data('name') || '';
                 const districtName = $('#district option:selected').data('name') || '';
                 const provinceName = $('#province option:selected').data('name') || '';
+
                 let fullAddress = '';
                 if (specificAddress) {
                     fullAddress += specificAddress;
@@ -596,20 +667,117 @@
                 if (provinceName) {
                     fullAddress += (fullAddress ? ', ' : '') + provinceName;
                 }
+
                 $('#fullAddress').val(fullAddress);
             }
 
-            // Custom validation for address fields
+            // Custom validation for address fields với SweetAlert2
             $('form').submit(function (e) {
-                const province = $('#province').val();
-                const district = $('#district').val();
-                const ward = $('#ward').val();
-                if (!province || !district || !ward) {
+                const isShippingEnabled = $('#shipto').is(':checked');
+
+                if (isShippingEnabled) {
+                    const province = $('#province').val();
+                    const district = $('#district').val();
+                    const ward = $('#ward').val();
+                    const specificAddress = $('#specificAddress').val().trim();
+
+                    // Kiểm tra từng trường và hiển thị thông báo cụ thể
+                    if (!province) {
+                        e.preventDefault();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Thông tin chưa đầy đủ',
+                            text: 'Vui lòng chọn Tỉnh/Thành phố cho địa chỉ giao hàng.',
+                            confirmButtonColor: '#ffc107',
+                            confirmButtonText: 'Đồng ý',
+                            focusConfirm: false,
+                            willClose: () => {
+                                $('#province').focus();
+                            }
+                        });
+                        return false;
+                    }
+
+                    if (!district) {
+                        e.preventDefault();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Thông tin chưa đầy đủ',
+                            text: 'Vui lòng chọn Quận/Huyện cho địa chỉ giao hàng.',
+                            confirmButtonColor: '#ffc107',
+                            confirmButtonText: 'Đồng ý',
+                            focusConfirm: false,
+                            willClose: () => {
+                                $('#district').focus();
+                            }
+                        });
+                        return false;
+                    }
+
+                    if (!ward) {
+                        e.preventDefault();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Thông tin chưa đầy đủ',
+                            text: 'Vui lòng chọn Phường/Xã cho địa chỉ giao hàng.',
+                            confirmButtonColor: '#ffc107',
+                            confirmButtonText: 'Đồng ý',
+                            focusConfirm: false,
+                            willClose: () => {
+                                $('#ward').focus();
+                            }
+                        });
+                        return false;
+                    }
+
+                    if (!specificAddress) {
+                        e.preventDefault();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Thông tin chưa đầy đủ',
+                            text: 'Vui lòng nhập địa chỉ cụ thể (số nhà, tên đường...).',
+                            confirmButtonColor: '#ffc107',
+                            confirmButtonText: 'Đồng ý',
+                            focusConfirm: false,
+                            willClose: () => {
+                                $('#specificAddress').focus();
+                            }
+                        });
+                        return false;
+                    }
+
+                    updateFullAddress();
+                }
+
+                // Kiểm tra phương thức thanh toán
+                const paymentMethod = $('input[name="PaymentMethod"]:checked').val();
+                if (!paymentMethod) {
                     e.preventDefault();
-                    alert('Vui lòng chọn đầy đủ thông tin địa chỉ (Tỉnh/Thành phố, Quận/Huyện, Phường/Xã)');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Chưa chọn phương thức thanh toán',
+                        text: 'Vui lòng chọn một phương thức thanh toán để tiếp tục.',
+                        confirmButtonColor: '#ffc107',
+                        confirmButtonText: 'Đồng ý',
+                        focusConfirm: false,
+                        willClose: () => {
+                            $('input[name="PaymentMethod"]').first().focus();
+                        }
+                    });
                     return false;
                 }
-                updateFullAddress();
+
+                // Hiển thị loading khi submit
+                Swal.fire({
+                    title: 'Đang xử lý đơn hàng...',
+                    text: 'Vui lòng đợi trong giây lát',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
             });
 
             // Back to top functionality
@@ -629,7 +797,32 @@
             // Dropdown toggle for Bootstrap compatibility
             $('.dropdown-toggle').dropdown();
         });
-</script>
+    </script>
+
+    <!-- Thay đổi 3: Thêm CSS tùy chỉnh cho SweetAlert2 (có thể thêm vào file CSS hoặc trong <style>) -->
+    <style>
+        .swal2-popup {
+            font-family: 'Poppins', sans-serif !important;
+        }
+
+        .swal2-title {
+            font-weight: 600 !important;
+        }
+
+        .swal2-content {
+            font-size: 14px !important;
+        }
+
+        .swal2-confirm {
+            font-weight: 500 !important;
+            padding: 8px 24px !important;
+        }
+
+        /* Loading spinner customization */
+        .swal2-loader {
+            border-color: #007bff transparent #007bff transparent !important;
+        }
+    </style>
 </body>
 
 </html>
