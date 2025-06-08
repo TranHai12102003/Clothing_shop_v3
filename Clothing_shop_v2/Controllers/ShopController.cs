@@ -26,6 +26,20 @@ namespace Clothing_shop_v2.Controllers
         public async Task<IActionResult> Index([FromQuery] ProductFilterParams filterParams, string sortBy = null)
         {
             ViewData["CurrentFilter"] = filterParams;
+            if (!string.IsNullOrEmpty(filterParams.SearchString))
+            {
+                filterParams.SearchString = System.Text.RegularExpressions.Regex.Replace(
+                    filterParams.SearchString.ToLower().Trim(), @"\s+", " ");
+            }
+            // Chuyển đổi sortBy thành ProductSortBy
+            if (!string.IsNullOrEmpty(sortBy) && Enum.TryParse<ProductSortBy>(sortBy, out var sortByEnum))
+            {
+                filterParams.SortBy = sortByEnum;
+            }
+            else
+            {
+                filterParams.SortBy = ProductSortBy.DateCreatedDescending; // Giá trị mặc định
+            }
             // Gọi action GetAll
             var productResult = await _productService.GetAll(filterParams); // GetAll trả về Task<ActionResult<PaginationModel<ProductGetVModel>>>
 

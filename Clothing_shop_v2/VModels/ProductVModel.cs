@@ -43,13 +43,24 @@ namespace Clothing_shop_v2.VModels
         public int TotalItems { get; set; }
         public string? SearchString { get; set; }
     }
-
+    public enum ProductSortBy
+    {
+        Default = 0,
+        PriceAscending = 1,
+        PriceDescending = 2,
+        NameAscending = 3,
+        NameDescending = 4,
+        DateCreatedDescending = 5, // Mới nhất
+        DateCreatedAscending = 6   // Cũ nhất
+    }
     public class ProductFilterParams
     {
         public string? SearchString { get; set; }
+        public Category? Category { get; set; } // Để lọc theo danh mục
         public bool? IsActive { get; set; }
         public int? CategoryId { get; set; }
         public decimal? MinPrice { get; set; }
+        public ProductSortBy SortBy { get; set; } = ProductSortBy.Default;
         public decimal? MaxPrice { get; set; }
         public int[] SizeIds { get; set; } // Để lọc theo kích thước
         public int[] ColorIds { get; set; } // Để lọc theo màu sắc

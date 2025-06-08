@@ -82,7 +82,7 @@ namespace Clothing_shop_v2.Services
                 .Include(p=>p.ProductImages)
                 .Include(p => p.Variants)
                 .Where(BuildQueryable(parameters));
-
+            query = ApplySorting(query, parameters.SortBy);
             var promotions = await query
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
@@ -215,13 +215,31 @@ namespace Clothing_shop_v2.Services
         private Expression<Func<Product, bool>> BuildQueryable(ProductFilterParams fParams)
         {
             return x =>
-                (string.IsNullOrEmpty(fParams.SearchString) || (x.ProductName != null && x.ProductName.Contains(fParams.SearchString))) &&
+                //(string.IsNullOrEmpty(fParams.SearchString) || (x.ProductName != null && x.ProductName.Contains(fParams.SearchString))) &&
+                (string.IsNullOrEmpty(fParams.SearchString) ||
+ (x.ProductName != null &&
+  EF.Functions.Collate(x.ProductName, "SQL_Latin1_General_CP1_CI_AI").Contains(fParams.SearchString)) ||
+ (x.Category != null && x.Category.CategoryName != null &&
+  EF.Functions.Collate(x.Category.CategoryName, "SQL_Latin1_General_CP1_CI_AI").Contains(fParams.SearchString))) &&
                 (fParams.IsActive == null || x.IsActive == fParams.IsActive) &&
                 (fParams.CategoryId == null || (x.CategoryId != null && x.CategoryId == fParams.CategoryId)) &&
                 (fParams.MinPrice == null || (x.Variants != null && x.Variants.Any(v => v.Price >= fParams.MinPrice))) &&
                 (fParams.MaxPrice == null || (x.Variants != null && x.Variants.Any(v => v.Price <= fParams.MaxPrice))) &&
                 (fParams.SizeIds == null || (x.Variants != null && x.Variants.Any(v => fParams.SizeIds.Contains(v.SizeId)))) &&
                 (fParams.ColorIds == null || (x.Variants != null && x.Variants.Any(v => fParams.ColorIds.Contains(v.ColorId))));
+        }
+        private IQueryable<Product> ApplySorting(IQueryable<Product> query, ProductSortBy sortBy)
+        {
+            return sortBy switch
+            {
+                ProductSortBy.PriceAscending => query.OrderBy(p => p.Variants.Min(v => v.Price)),
+                ProductSortBy.PriceDescending => query.OrderByDescending(p => p.Variants.Min(v => v.Price)),
+                ProductSortBy.NameAscending => query.OrderBy(p => p.ProductName),
+                ProductSortBy.NameDescending => query.OrderByDescending(p => p.ProductName),
+                ProductSortBy.DateCreatedDescending => query.OrderByDescending(p => p.CreatedDate),
+                ProductSortBy.DateCreatedAscending => query.OrderBy(p => p.CreatedDate),
+                _ => query.OrderBy(p => p.Id) // Default sorting
+            };
         }
     }
 }
