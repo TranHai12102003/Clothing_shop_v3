@@ -12,6 +12,7 @@ using Clothing_shop_v2.VModels;
 using Clothing_shop_v2.VModels.Home;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -283,6 +284,118 @@ namespace Clothing_shop_v2.Controllers
                 success = false,
                 message = "Dữ liệu không hợp lệ."
             });
+        }
+        [HttpGet]
+        public IActionResult GoogleLogin()
+        {
+            var redirectUrl = Url.Action("GoogleResponse", "Home", null, Request.Scheme);
+            var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GoogleResponse()
+        {
+            // Xác thực người dùng với Google
+            var authenticateResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+            if (!authenticateResult.Succeeded)
+            {
+                _logger.LogError("Google authentication failed: {Error}", authenticateResult.Failure?.Message);
+                return RedirectToAction("Login", new { error = "google_auth_failed" });
+            }
+
+            // Lấy thông tin người dùng từ Google
+            var claims = authenticateResult.Principal.Claims;
+            var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var fullName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+            var googleId = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(googleId))
+            {
+                _logger.LogError("Missing email or Google ID in authentication response.");
+                return RedirectToAction("Login", new { error = "google_auth_failed" });
+            }
+
+            // Kiểm tra xem người dùng có trong cơ sở dữ liệu chưa
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+            {
+                // Tạo người dùng mới nếu chưa tồn tại
+                user = new User
+                {
+                    Email = email,
+                    FullName = fullName ?? "Google User",
+                    Username = email,
+                    PasswordHash = "",
+                    RoleId = 2,
+                    IsActive = true,
+                    CreatedDate = DateTime.Now,
+                };
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+            }
+            else if (user.IsActive == false)
+            {
+                // Nếu người dùng tồn tại nhưng chưa kích hoạt
+                return RedirectToAction("Login", new { error = "account_not_activated" });
+            }
+
+            // Tạo claims cho người dùng
+            var claimsList = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.FullName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role?.RoleName ?? "Customer")
+            };
+
+            var identity = new ClaimsIdentity(claimsList, "MyCookieAuth");
+            var principal = new ClaimsPrincipal(identity);
+
+            // Đăng nhập người dùng bằng cookie
+            await HttpContext.SignInAsync("MyCookieAuth", principal);
+
+            // Đồng bộ giỏ hàng từ cookie sang cơ sở dữ liệu (nếu có)
+            try
+            {
+                var cartCookie = Request.Cookies["Cart"];
+                if (!string.IsNullOrEmpty(cartCookie))
+                {
+                    var cart = JsonSerializer.Deserialize<List<CartCreateVModel>>(cartCookie);
+                    if (cart != null)
+                    {
+                        foreach (var item in cart)
+                        {
+                            var cartModel = new CartCreateVModel
+                            {
+                                UserId = user.Id,
+                                VariantId = item.VariantId,
+                                Quantity = item.Quantity
+                            };
+                            await _cartService.Create(cartModel);
+                        }
+                        // Xóa cookie giỏ hàng sau khi đồng bộ
+                        Response.Cookies.Delete("Cart");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error syncing cart after Google login: {Error}", ex.Message);
+            }
+
+            // Chuyển hướng dựa trên vai trò người dùng
+            if (user.Role?.RoleName == "Admin")
+            {
+                return RedirectToAction("Index", "Admin");
+            }
+            else if (user.Role?.RoleName == "Employee")
+            {
+                return RedirectToAction("Index", "Employee");
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

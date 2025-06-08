@@ -1,8 +1,12 @@
-﻿using Clothing_shop_v2.Helpers;
+﻿using System.Security.Claims;
+using Clothing_shop_v2.Helpers;
 using Clothing_shop_v2.Models;
 using Clothing_shop_v2.Services;
 using Clothing_shop_v2.Services.ISerivce;
 using CloudinaryDotNet;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using WebPizza_API_BackEnd.Service;
 
@@ -46,6 +50,50 @@ builder.Services.AddAuthentication("MyCookieAuth")
         options.LoginPath = "/Home/Login"; // Nếu chưa login sẽ chuyển về đây
         options.AccessDeniedPath = "/Home/AccessDenied"; // Nếu không đủ quyền sẽ trả về trang 404
         options.ExpireTimeSpan = TimeSpan.FromHours(2); // Thời gian hết hạn cookie
+    })
+    .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+    {
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+    options.CallbackPath = "/signin-google";
+
+    // Cấu hình scope
+    options.Scope.Clear();
+    options.Scope.Add("openid");
+    options.Scope.Add("profile");
+    options.Scope.Add("email");
+
+    // Cấu hình claims mapping cho .NET 8
+    options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
+    options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
+    options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+    options.ClaimActions.MapJsonKey("picture", "picture");
+    options.ClaimActions.MapJsonKey(ClaimTypes.GivenName, "given_name");
+    options.ClaimActions.MapJsonKey(ClaimTypes.Surname, "family_name");
+
+    options.SaveTokens = true;
+
+    options.Events = new OAuthEvents
+    {
+        OnCreatingTicket = async context =>
+        {
+            // Log thông tin để debug
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Google authentication ticket created for user: {Email}",
+                context.Principal?.FindFirst(ClaimTypes.Email)?.Value);
+
+            await Task.CompletedTask;
+        },
+        OnRemoteFailure = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogError("Google authentication failed: {Error}", context.Failure?.Message);
+
+            context.Response.Redirect("/Home/Login?error=google_auth_failed");
+            context.HandleResponse();
+            return Task.CompletedTask;
+        }
+        };
     });
 builder.Services.AddAuthorization(); // Thêm Authorize luôn
 
